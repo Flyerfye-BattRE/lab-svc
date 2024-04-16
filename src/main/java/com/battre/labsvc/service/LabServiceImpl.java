@@ -24,19 +24,19 @@ public class LabServiceImpl extends LabSvcGrpc.LabSvcImplBase {
     }
 
     @Override
-    public void processLabBatteries(ProcessLabBatteriesRequest request, StreamObserver<ProcessLabBatteriesResponse> response){
-        logger.info("processLabBatteries invoked");
+    public void processLabBatteries(ProcessLabBatteriesRequest request, StreamObserver<ProcessLabBatteriesResponse> responseObserver){
+        logger.info("processLabBatteries() invoked");
 
         boolean processBatteriesStatus = addBatteriesToLabAndTesterBacklog(request.getBatteryIdTypesList());
 
-        ProcessLabBatteriesResponse myResponse = ProcessLabBatteriesResponse.newBuilder()
+        ProcessLabBatteriesResponse response = ProcessLabBatteriesResponse.newBuilder()
                 .setSuccess(processBatteriesStatus)
                 .build();
 
-        response.onNext(myResponse);
-        response.onCompleted();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
 
-        logger.info("processLabBatteries finished");
+        logger.info("processLabBatteries() finished");
     }
 
     @Transactional

@@ -113,10 +113,10 @@ public class LabService {
         try {
             // Blocks until the response is available
             batteryTypeToTerminalIds = convertToBatteryTypeTerminalMap(
-                    responseFuture.get(5, TimeUnit.SECONDS).getPairsList()
+                    responseFuture.get(5, TimeUnit.SECONDS).getBatteriesList()
             );
         } catch (Exception e) {
-            logger.severe("getBatteryTerminalLayouts responseFuture error: " + e.getMessage());
+            logger.severe("getBatteryTerminalLayouts() responseFuture error: " + e.getMessage());
         }
 
         return batteryTypeToTerminalIds;
