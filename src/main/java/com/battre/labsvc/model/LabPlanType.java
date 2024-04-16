@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "LabPlans", schema = "LabSvcDb")
+@Table(name = "LabPlans", schema = "LabSvcSchema")
 public class LabPlanType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
