@@ -40,9 +40,9 @@ public class LabService {
         this.testerBacklogRepository = testerBacklogRepository;
     }
 
-    public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes){
+    public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
         //create new lab plan records for all the batteries
-        for(BatteryIdType batteryInfo:batteryIdsTypes) {
+        for (BatteryIdType batteryInfo : batteryIdsTypes) {
             LabPlanType labPlan = new LabPlanType(
                     batteryInfo.getBatteryId()
             );
@@ -52,18 +52,19 @@ public class LabService {
 
         return true;
     }
-    public boolean addBatteriesToTesterBacklog(List<BatteryIdType> batteryIdsTypes){
+
+    public boolean addBatteriesToTesterBacklog(List<BatteryIdType> batteryIdsTypes) {
         //query spec svc for terminal_layout_ids per batteryId
         Set<Integer> batteryTypesSet = new HashSet<>();
 
         //de-duplicate battery types before querying for corresponding terminal ids
-        for(BatteryIdType batteryInfo:batteryIdsTypes) {
+        for (BatteryIdType batteryInfo : batteryIdsTypes) {
             batteryTypesSet.add(batteryInfo.getBatteryTypeId());
         }
 
         Map<Integer, Integer> batteryTypeToTerminalIds = getBatteryTerminalIdMap(batteryTypesSet.stream().toList());
 
-        for(BatteryIdType batteryInfo:batteryIdsTypes) {
+        for (BatteryIdType batteryInfo : batteryIdsTypes) {
             TesterBacklogType testerBacklogEntry = new TesterBacklogType(
                     batteryInfo.getBatteryId(),
                     batteryTypeToTerminalIds.get(batteryInfo.getBatteryTypeId())
@@ -75,7 +76,7 @@ public class LabService {
         return true;
     }
 
-    private Map<Integer, Integer> getBatteryTerminalIdMap(List<Integer> batteryTypeIds){
+    private Map<Integer, Integer> getBatteryTerminalIdMap(List<Integer> batteryTypeIds) {
         GetBatteryTerminalLayoutsRequest request = GetBatteryTerminalLayoutsRequest
                 .newBuilder()
                 .addAllBatteryTypeIds(batteryTypeIds)
