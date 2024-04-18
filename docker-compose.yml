@@ -12,8 +12,6 @@ services:
     env_file:
       - .env
     volumes:
-      - ./src/main/resources/initdb/init1-labsvcdb-schema.sql:/docker-entrypoint-initdb.d/init1-labsvcdb-schema.sql
-      - ./src/main/resources/initdb/init2-labsvcdb-data.sql:/docker-entrypoint-initdb.d/init2-labsvcdb-data.sql
       - postgres_data:/var/lib/postgresql/data
     networks:
       - my_network
