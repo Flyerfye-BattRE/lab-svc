@@ -27,17 +27,17 @@ import java.util.stream.Collectors;
 public class LabService {
     private static final Logger logger = Logger.getLogger(LabService.class.getName());
 
-    private final LabPlansRepository labPlansRepository;
+    private final LabPlansRepository labPlansRepo;
 
-    private final TesterBacklogRepository testerBacklogRepository;
+    private final TesterBacklogRepository testerBacklogRepo;
 
     @GrpcClient("specSvc")
     private SpecSvcGrpc.SpecSvcStub specSvcClient;
 
     @Autowired
-    LabService(LabPlansRepository labPlansRepository, TesterBacklogRepository testerBacklogRepository) {
-        this.labPlansRepository = labPlansRepository;
-        this.testerBacklogRepository = testerBacklogRepository;
+    LabService(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo) {
+        this.labPlansRepo = labPlansRepo;
+        this.testerBacklogRepo = testerBacklogRepo;
     }
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
@@ -47,7 +47,7 @@ public class LabService {
                     batteryInfo.getBatteryId()
             );
 
-            labPlansRepository.save(labPlan);
+            labPlansRepo.save(labPlan);
         }
 
         return true;
@@ -70,7 +70,7 @@ public class LabService {
                     batteryTypeToTerminalIds.get(batteryInfo.getBatteryTypeId())
             );
 
-            testerBacklogRepository.save(testerBacklogEntry);
+            testerBacklogRepo.save(testerBacklogEntry);
         }
 
         return true;
