@@ -39,4 +39,52 @@ public class TesterBacklogType {
         this.testerBacklogPriority = 50;
         this.testerBacklogStartDate = Timestamp.from(Instant.now());
     }
+
+    public Long getTesterBacklogId() {
+        return testerBacklogId;
+    }
+
+    public void setTesterBacklogId(Long testerBacklogId) {
+        this.testerBacklogId = testerBacklogId;
+    }
+
+    public int getTerminalLayoutId() {
+        return terminalLayoutId;
+    }
+
+    public void setTerminalLayoutId(int terminalLayoutId) {
+        this.terminalLayoutId = terminalLayoutId;
+    }
+
+    public int getBatteryId() {
+        return batteryId;
+    }
+
+    public void setBatteryId(int batteryId) {
+        this.batteryId = batteryId;
+    }
+
+    public int getTesterBacklogPriority() {
+        return testerBacklogPriority;
+    }
+
+    public void setTesterBacklogPriority(int testerBacklogPriority) {
+        this.testerBacklogPriority = testerBacklogPriority;
+    }
+
+    public Timestamp getTesterBacklogStartDate() {
+        return testerBacklogStartDate;
+    }
+
+    public void setTesterBacklogStartDate(Timestamp testerBacklogStartDate) {
+        this.testerBacklogStartDate = testerBacklogStartDate;
+    }
+
+    public Timestamp getTesterBacklogEndDate() {
+        return testerBacklogEndDate;
+    }
+
+    public void setTesterBacklogEndDate(Timestamp testerBacklogEndDate) {
+        this.testerBacklogEndDate = testerBacklogEndDate;
+    }
 }

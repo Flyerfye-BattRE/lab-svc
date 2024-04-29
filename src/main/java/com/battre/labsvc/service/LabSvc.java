@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-public class LabService {
-    private static final Logger logger = Logger.getLogger(LabService.class.getName());
+public class LabSvc {
+    private static final Logger logger = Logger.getLogger(LabSvc.class.getName());
 
     private final LabPlansRepository labPlansRepo;
 
@@ -35,9 +35,12 @@ public class LabService {
     private SpecSvcGrpc.SpecSvcStub specSvcClient;
 
     @Autowired
-    LabService(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo) {
+    LabSvc(LabPlansRepository labPlansRepo,
+           TesterBacklogRepository testerBacklogRepo,
+           SpecSvcGrpc.SpecSvcStub specSvcClient) {
         this.labPlansRepo = labPlansRepo;
         this.testerBacklogRepo = testerBacklogRepo;
+        this.specSvcClient = specSvcClient;
     }
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {

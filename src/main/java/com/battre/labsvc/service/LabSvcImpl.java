@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @GrpcService
-public class LabServiceImpl extends LabSvcGrpc.LabSvcImplBase {
-    private static final Logger logger = Logger.getLogger(LabServiceImpl.class.getName());
+public class LabSvcImpl extends LabSvcGrpc.LabSvcImplBase {
+    private static final Logger logger = Logger.getLogger(LabSvcImpl.class.getName());
 
-    private final LabService labService;
+    private final LabSvc labSvc;
 
     @Autowired
-    public LabServiceImpl(LabService labService) {
-        this.labService = labService;
+    public LabSvcImpl(LabSvc labSvc) {
+        this.labSvc = labSvc;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class LabServiceImpl extends LabSvcGrpc.LabSvcImplBase {
 
     @Transactional
     private boolean addBatteriesToLabAndTesterBacklog(List<BatteryIdType> batteryIdsTypes) {
-        return labService.addBatteriesToLabPlans(batteryIdsTypes) &&
-                labService.addBatteriesToTesterBacklog(batteryIdsTypes);
+        return labSvc.addBatteriesToLabPlans(batteryIdsTypes) &&
+                labSvc.addBatteriesToTesterBacklog(batteryIdsTypes);
     }
 
 
