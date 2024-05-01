@@ -35,13 +35,16 @@ public class LabSvc {
     private SpecSvcGrpc.SpecSvcStub specSvcClient;
 
     @Autowired
-    LabSvc(LabPlansRepository labPlansRepo,
-           TesterBacklogRepository testerBacklogRepo,
-           SpecSvcGrpc.SpecSvcStub specSvcClient) {
+    LabSvc(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo) {
         this.labPlansRepo = labPlansRepo;
         this.testerBacklogRepo = testerBacklogRepo;
+
+    }
+
+    public void setSpecSvcClient(SpecSvcGrpc.SpecSvcStub specSvcClient) {
         this.specSvcClient = specSvcClient;
     }
+
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
         //create new lab plan records for all the batteries
@@ -66,6 +69,13 @@ public class LabSvc {
         }
 
         Map<Integer, Integer> batteryTypeToTerminalIds = getBatteryTerminalIdMap(batteryTypesSet.stream().toList());
+
+        if(batteryTypeToTerminalIds.size() != batteryTypesSet.size()) {
+            logger.severe("Could not obtain terminal type mapping [" + batteryTypeToTerminalIds.size()
+                    + "] for all battery types [" + batteryTypesSet.size() + "] specified");
+
+            return false;
+        }
 
         for (BatteryIdType batteryInfo : batteryIdsTypes) {
             TesterBacklogType testerBacklogEntry = new TesterBacklogType(

@@ -57,9 +57,9 @@ WHERE NOT EXISTS (
 INSERT INTO LabSvcSchema.ResultTypes (result_type_id, result_type)
 SELECT * FROM (VALUES
 	(1, 'Pass'),
-	(2, 'Fail'),
-	(3, 'Exception'),
-	(4, 'Retry')
+	(2, 'Fail-Retry'),
+	(3, 'Fail-Destroy'),
+	(4, 'Exception')
 ) AS v (result_type_id, result_type)
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.ResultTypes

@@ -48,7 +48,8 @@ public class LabSvcTests {
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        labSvc = new LabSvc(labPlansRepo, testerBacklogRepo, specSvcClient);
+        labSvc = new LabSvc(labPlansRepo, testerBacklogRepo);
+        labSvc.setSpecSvcClient(specSvcClient);
     }
 
     @AfterEach
@@ -81,7 +82,7 @@ public class LabSvcTests {
         List<BatteryIdType> batteryIdsTypes = List.of(
                 BatteryIdType.newBuilder().setBatteryId(4).setBatteryTypeId(2).build(),
                 BatteryIdType.newBuilder().setBatteryId(5).setBatteryTypeId(1).build(),
-                BatteryIdType.newBuilder().setBatteryId(6).setBatteryTypeId(2).build(),
+                BatteryIdType.newBuilder().setBatteryId(6).setBatteryTypeId(3).build(),
                 BatteryIdType.newBuilder().setBatteryId(7).setBatteryTypeId(4).build()
         );
 
@@ -107,7 +108,7 @@ public class LabSvcTests {
         assertEquals(5, capturedVals.get(1).getBatteryId());
         assertEquals(4, capturedVals.get(1).getTerminalLayoutId());
         assertEquals(6, capturedVals.get(2).getBatteryId());
-        assertEquals(3, capturedVals.get(2).getTerminalLayoutId());
+        assertEquals(5, capturedVals.get(2).getTerminalLayoutId());
         assertEquals(7, capturedVals.get(3).getBatteryId());
         assertEquals(2, capturedVals.get(3).getTerminalLayoutId());
     }

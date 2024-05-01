@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbStationTypes (
 CREATE TABLE IF NOT EXISTS LabSvcSchema.TesterStations (
   tester_stn_id SERIAL PRIMARY KEY,
   terminal_layout_id INT NOT NULL,
+  in_use BOOLEAN DEFAULT FALSE,
+  active_battery_id INT,
+  last_active_date TIMESTAMP,
   last_calibration_date TIMESTAMP NOT NULL,
   next_calibration_date TIMESTAMP NOT NULL
 );
@@ -38,6 +41,9 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.TesterStations (
 CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbStations (
   refurb_stn_id SERIAL PRIMARY KEY,
   refurb_station_type_id INT NOT NULL,
+  in_use BOOLEAN DEFAULT FALSE,
+  active_battery_id INT,
+  last_active_date TIMESTAMP,
   last_calibration_date TIMESTAMP NOT NULL,
   next_calibration_date TIMESTAMP NOT NULL,
   CONSTRAINT rs_refurb_station_type_id FOREIGN KEY (refurb_station_type_id) REFERENCES LabSvcSchema.RefurbStationTypes(refurb_station_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION

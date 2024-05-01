@@ -28,27 +28,27 @@ WHERE NOT EXISTS (
 );
 
 -- Insert statements for the "TesterStations" table
-INSERT INTO LabSvcSchema.TesterStations (tester_stn_id, terminal_layout_id, last_calibration_date, next_calibration_date)
+INSERT INTO LabSvcSchema.TesterStations (tester_stn_id, terminal_layout_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 SELECT * FROM (VALUES
-	(1, 1, '2024-01-27 17:30:54.168Z'::timestamp, '2024-07-27 16:30:54.168Z'::timestamp),
-	(2, 4, '2024-01-17 18:25:54.234Z'::timestamp, '2024-07-17 17:25:54.234Z'::timestamp),
-	(3, 2, '2024-01-12 01:00:54.754Z'::timestamp, '2024-07-12 00:00:54.754Z'::timestamp),
-	(4, 5, '2024-01-03 22:15:54.121Z'::timestamp, '2024-07-03 21:15:54.121Z'::timestamp),
-	(5, 3, '2024-01-19 12:11:54.121Z'::timestamp, '2024-07-19 11:11:54.121Z'::timestamp),
-	(6, 1, '2024-01-09 02:05:54.121Z'::timestamp, '2024-07-09 02:05:54.121Z'::timestamp)
-) AS v (tester_stn_id, terminal_layout_id, last_calibration_date, next_calibration_date)
+	(1, 1, false, NULL::integer, '2024-01-27 17:30:54.168Z'::timestamp, '2024-01-27 17:30:54.168Z'::timestamp, '2024-07-27 16:30:54.168Z'::timestamp),
+	(2, 4, false, NULL::integer, '2024-01-17 18:25:54.234Z'::timestamp, '2024-01-17 18:25:54.234Z'::timestamp, '2024-07-17 17:25:54.234Z'::timestamp),
+	(3, 2, false, NULL::integer, '2024-01-12 01:00:54.754Z'::timestamp, '2024-01-12 01:00:54.754Z'::timestamp, '2024-07-12 00:00:54.754Z'::timestamp),
+	(4, 5, false, NULL::integer, '2024-01-03 22:15:54.121Z'::timestamp, '2024-01-03 22:15:54.121Z'::timestamp, '2024-07-03 21:15:54.121Z'::timestamp),
+	(5, 3, false, NULL::integer, '2024-01-19 12:11:54.121Z'::timestamp, '2024-01-19 12:11:54.121Z'::timestamp, '2024-07-19 11:11:54.121Z'::timestamp),
+	(6, 1, false, NULL::integer, '2024-01-09 02:05:54.121Z'::timestamp, '2024-01-09 02:05:54.121Z'::timestamp, '2024-07-09 02:05:54.121Z'::timestamp)
+) AS v (tester_stn_id, terminal_layout_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.TesterStations
 );
 
 -- Insert statements for the "RefurbStations" table
-INSERT INTO LabSvcSchema.RefurbStations (refurb_stn_id, refurb_station_type_id, last_calibration_date, next_calibration_date)
+INSERT INTO LabSvcSchema.RefurbStations (refurb_stn_id, refurb_station_type_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 SELECT * FROM (VALUES
-	(1, 1, '2023-10-28 22:10:54.168Z'::timestamp, '2024-04-28 22:10:54.168Z'::timestamp),
-	(2, 4, '2023-10-21 18:10:54.234Z'::timestamp, '2024-04-21 18:10:54.234Z'::timestamp),
-	(3, 2, '2023-10-19 02:10:54.754Z'::timestamp, '2024-04-19 02:10:54.754Z'::timestamp),
-	(4, 3, '2023-10-08 13:10:54.121Z'::timestamp, '2024-04-08 13:10:54.121Z'::timestamp)
-) AS v (refurb_stn_id, refurb_station_type_id, last_calibration_date, next_calibration_date)
+	(1, 1, false, NULL::integer, '2023-10-28 22:10:54.168Z'::timestamp, '2023-10-28 22:10:54.168Z'::timestamp, '2024-04-28 22:10:54.168Z'::timestamp),
+	(2, 4, false, NULL::integer, '2023-10-21 18:10:54.234Z'::timestamp, '2023-10-21 18:10:54.234Z'::timestamp, '2024-04-21 18:10:54.234Z'::timestamp),
+	(3, 2, false, NULL::integer, '2023-10-19 02:10:54.754Z'::timestamp, '2023-10-19 02:10:54.754Z'::timestamp, '2024-04-19 02:10:54.754Z'::timestamp),
+	(4, 3, false, NULL::integer, '2023-10-08 13:10:54.121Z'::timestamp, '2023-10-08 13:10:54.121Z'::timestamp, '2024-04-08 13:10:54.121Z'::timestamp)
+) AS v (refurb_stn_id, refurb_station_type_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.RefurbStations
 );

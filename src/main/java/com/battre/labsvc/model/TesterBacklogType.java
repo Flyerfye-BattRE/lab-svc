@@ -16,16 +16,16 @@ public class TesterBacklogType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tester_backlog_id")
-    private Long testerBacklogId;
+    private Integer testerBacklogId;
 
     @Column(name = "terminal_layout_id")
-    private int terminalLayoutId;
+    private Integer terminalLayoutId;
 
     @Column(name = "battery_id")
-    private int batteryId;
+    private Integer batteryId;
 
     @Column(name = "tester_backlog_priority")
-    private int testerBacklogPriority;
+    private Integer testerBacklogPriority;
 
     @Column(name = "tester_backlog_start_date")
     private Timestamp testerBacklogStartDate;
@@ -40,35 +40,35 @@ public class TesterBacklogType {
         this.testerBacklogStartDate = Timestamp.from(Instant.now());
     }
 
-    public Long getTesterBacklogId() {
+    public Integer getTesterBacklogId() {
         return testerBacklogId;
     }
 
-    public void setTesterBacklogId(Long testerBacklogId) {
+    public void setTesterBacklogId(Integer testerBacklogId) {
         this.testerBacklogId = testerBacklogId;
     }
 
-    public int getTerminalLayoutId() {
+    public Integer getTerminalLayoutId() {
         return terminalLayoutId;
     }
 
-    public void setTerminalLayoutId(int terminalLayoutId) {
+    public void setTerminalLayoutId(Integer terminalLayoutId) {
         this.terminalLayoutId = terminalLayoutId;
     }
 
-    public int getBatteryId() {
+    public Integer getBatteryId() {
         return batteryId;
     }
 
-    public void setBatteryId(int batteryId) {
+    public void setBatteryId(Integer batteryId) {
         this.batteryId = batteryId;
     }
 
-    public int getTesterBacklogPriority() {
+    public Integer getTesterBacklogPriority() {
         return testerBacklogPriority;
     }
 
-    public void setTesterBacklogPriority(int testerBacklogPriority) {
+    public void setTesterBacklogPriority(Integer testerBacklogPriority) {
         this.testerBacklogPriority = testerBacklogPriority;
     }
 
