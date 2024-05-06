@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 class LabSvcApplicationTests {
     @MockBean
     private SpecSvcGrpc.SpecSvcStub specSvcClient;
+
     @Test
     void contextLoads() {
     }

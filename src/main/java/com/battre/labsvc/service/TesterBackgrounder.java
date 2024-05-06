@@ -2,7 +2,12 @@ package com.battre.labsvc.service;
 
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterStationsRepository;
+import com.battre.stubs.services.OpsSvcGrpc;
+import com.battre.stubs.services.StorageSvcGrpc;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,30 +18,39 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
+@Scope("prototype")
 public class TesterBackgrounder implements Runnable {
     private static final Logger logger = Logger.getLogger(TesterBackgrounder.class.getName());
 
+    private final ApplicationContext context;
     private final TesterBacklogRepository testerBacklogRepo;
     private final TesterStationsRepository testerStationsRepo;
-
     // Check every 5 seconds
     private final long checkInterval = 5000;
     private final Object lock = new Object();
-    private final BlockingQueue<TesterResultRecord> resultQueue = new LinkedBlockingQueue<>();
-    ExecutorService testerThreadPool = Executors.newCachedThreadPool();
+    private final ExecutorService testerThreadPool;
+    private final ExecutorService resultProcessorThread;
     private volatile boolean active = true;
 
     @Autowired
-    public TesterBackgrounder(TesterBacklogRepository testerBacklogRepo,
-                              TesterStationsRepository testerStationsRepo) {
+    public TesterBackgrounder(
+            ApplicationContext context,
+            TesterBacklogRepository testerBacklogRepo,
+            TesterStationsRepository testerStationsRepo
+    ) {
+        this.context = context;
         this.testerBacklogRepo = testerBacklogRepo;
         this.testerStationsRepo = testerStationsRepo;
+
+        testerThreadPool = Executors.newCachedThreadPool();
+        resultProcessorThread = Executors.newSingleThreadExecutor();
+
+        resultProcessorThread.submit(context.getBean(TesterResultProcessor.class));
     }
 
     @Override
@@ -96,7 +110,7 @@ public class TesterBackgrounder implements Runnable {
             // if the desired terminal layout is present in the avail testers mapping
             if (availTesters.containsKey(terminalLayoutId) && !availTesters.get(terminalLayoutId).isEmpty()) {
                 int selectedTester = availTesters.get(terminalLayoutId).get(0);
-                boolean result = sendBatteryToTester(testerBacklogId, selectedTester, batteryId);
+                boolean result = sendBatteryToTester(testerBacklogId, selectedTester, batteryId, terminalLayoutId);
                 logger.info("Backlog [" + testerBacklogId + "] tester " + selectedTester + " found");
 
                 // remove the tester from the list of available testers if battery sent successfully
@@ -105,18 +119,21 @@ public class TesterBackgrounder implements Runnable {
                     availTesters.get(terminalLayoutId).remove(0);
                 }
             }
-
         }
     }
 
     @Transactional
-    private boolean sendBatteryToTester(int testerBacklogId, int testerId, int batteryId) {
+    private boolean sendBatteryToTester(int testerBacklogId, int testerId, int batteryId, int terminalLayoutId) {
         //  TesterBacklog: Set end date
         testerBacklogRepo.endTesterBacklogEntry(testerBacklogId, Timestamp.from(Instant.now()));
         //  TesterStations: Update status, Active Battery Id, Last used date
         testerStationsRepo.markTesterInUse(testerId, batteryId, Timestamp.from(Instant.now()));
+
         //  Start a cached thread to perform the testing
-        testerThreadPool.submit(new TesterRunnable(testerStationsRepo, resultQueue, testerId, batteryId));
+        TesterStationsRepository tsrBean = context.getBean(TesterStationsRepository.class);
+        BlockingQueue<TesterResultRecord> resultQueue = context.getBean(BlockingQueue.class);
+        TesterRunnable tr = new TesterRunnable(tsrBean, resultQueue, testerId, batteryId, terminalLayoutId);
+        testerThreadPool.submit(tr);
 
         return true;
     }
@@ -130,5 +147,4 @@ public class TesterBackgrounder implements Runnable {
                                 Collectors.toList())
                 ));
     }
-
 }

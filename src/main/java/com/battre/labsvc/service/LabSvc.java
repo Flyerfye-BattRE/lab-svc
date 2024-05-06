@@ -45,7 +45,6 @@ public class LabSvc {
         this.specSvcClient = specSvcClient;
     }
 
-
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
         //create new lab plan records for all the batteries
         for (BatteryIdType batteryInfo : batteryIdsTypes) {
@@ -70,7 +69,7 @@ public class LabSvc {
 
         Map<Integer, Integer> batteryTypeToTerminalIds = getBatteryTerminalIdMap(batteryTypesSet.stream().toList());
 
-        if(batteryTypeToTerminalIds.size() != batteryTypesSet.size()) {
+        if (batteryTypeToTerminalIds.size() != batteryTypesSet.size()) {
             logger.severe("Could not obtain terminal type mapping [" + batteryTypeToTerminalIds.size()
                     + "] for all battery types [" + batteryTypesSet.size() + "] specified");
 

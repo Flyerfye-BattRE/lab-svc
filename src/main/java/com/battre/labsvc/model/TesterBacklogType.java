@@ -44,10 +44,6 @@ public class TesterBacklogType {
         return testerBacklogId;
     }
 
-    public void setTesterBacklogId(Integer testerBacklogId) {
-        this.testerBacklogId = testerBacklogId;
-    }
-
     public Integer getTerminalLayoutId() {
         return terminalLayoutId;
     }

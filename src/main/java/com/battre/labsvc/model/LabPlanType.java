@@ -28,11 +28,9 @@ public class LabPlanType {
     @Column(name = "battery_id")
     private int batteryId;
 
-
     @Column(name = "tester_record_id")
     @JoinColumn(name = "tester_record_id")
     private int testerRecordId;
-
 
     @Column(name = "refurb_plan_id")
     @JoinColumn(name = "refurb_plan_id")
@@ -45,10 +43,6 @@ public class LabPlanType {
 
     public Long getLabPlanId() {
         return labPlanId;
-    }
-
-    public void setLabPlanId(Long labPlanId) {
-        this.labPlanId = labPlanId;
     }
 
     public Timestamp getLabPlanStartDate() {

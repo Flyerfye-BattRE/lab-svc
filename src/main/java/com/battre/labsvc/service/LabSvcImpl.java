@@ -45,5 +45,4 @@ public class LabSvcImpl extends LabSvcGrpc.LabSvcImplBase {
                 labSvc.addBatteriesToTesterBacklog(batteryIdsTypes);
     }
 
-
 }

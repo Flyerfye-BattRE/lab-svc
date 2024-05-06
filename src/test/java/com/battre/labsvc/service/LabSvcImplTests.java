@@ -36,7 +36,7 @@ public class LabSvcImplTests {
     }
 
     @Test
-    void testProcessLabBatteriesSuccess(){
+    void testProcessLabBatteriesSuccess() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any())).thenReturn(true);
@@ -52,7 +52,7 @@ public class LabSvcImplTests {
     }
 
     @Test
-    void testProcessLabBatteriesAddBatteriesToLabPlansFail(){
+    void testProcessLabBatteriesAddBatteriesToLabPlansFail() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any())).thenReturn(false);
@@ -66,7 +66,7 @@ public class LabSvcImplTests {
     }
 
     @Test
-    void testProcessLabBatteriesAddBatteriesToTesterBacklogFail(){
+    void testProcessLabBatteriesAddBatteriesToTesterBacklogFail() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any())).thenReturn(true);
@@ -81,4 +81,3 @@ public class LabSvcImplTests {
         verify(responseProcessLabBatteriesResponse).onCompleted();
     }
 }
-

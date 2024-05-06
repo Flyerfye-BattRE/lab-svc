@@ -1,7 +1,7 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.enums.TestResult;
 import com.battre.labsvc.repository.TesterStationsRepository;
-import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -17,16 +17,19 @@ public class TesterRunnable implements Runnable {
     private final BlockingQueue<TesterResultRecord> resultQueue;
     private final int testerId;
     private final int batteryId;
+    private final int terminalLayoutId;
     private final Random random;
 
     TesterRunnable(TesterStationsRepository testerStationsRepo,
                    BlockingQueue<TesterResultRecord> resultQueue,
                    int testerId,
-                   int batteryId) {
+                   int batteryId,
+                   int terminalLayoutId) {
         this.testerStationsRepo = testerStationsRepo;
         this.resultQueue = resultQueue;
         this.testerId = testerId;
         this.batteryId = batteryId;
+        this.terminalLayoutId = terminalLayoutId;
         this.random = new Random();
     }
 
@@ -47,22 +50,22 @@ public class TesterRunnable implements Runnable {
     private TesterResultRecord performTest() {
         int testSchemeId = random.nextInt(NUM_TEST_SCHEMES) + 1;
         int resultId = generateResultId();
-        return new TesterResultRecord(testerId, batteryId, testSchemeId, resultId);
+        return new TesterResultRecord(testerId, batteryId, testSchemeId, terminalLayoutId, resultId, Timestamp.from(Instant.now()));
     }
-
 
     // Pass         (resultId=1) has 85% chance
     // Fail-Retry   (resultId=2) has 10% chance
-    // Fail-Destroy (resultId=3) has 5% chance
-    private int generateResultId(){
+    // Fail-Reject  (resultId=3) has 5% chance
+    private int generateResultId() {
         double resultChance = random.nextDouble();
+        logger.info("Tester [" + testerId + "]: chance " + resultChance);
 
         if (resultChance < 0.85) {
-            return 1;
+            return TestResult.PASS.getStatusCode();
         } else if (resultChance < 0.95) {
-            return 2;
+            return TestResult.FAIL_RETRY.getStatusCode();
         } else {
-            return 3;
+            return TestResult.FAIL_REJECT.getStatusCode();
         }
     }
 }

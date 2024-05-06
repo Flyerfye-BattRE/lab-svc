@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.TestSchemes (
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbPlans (
   refurb_plan_id SERIAL PRIMARY KEY,
+  battery_id INT NOT NULL,
   refurb_start_date TIMESTAMP NOT NULL,
   refurb_end_date TIMESTAMP,
   resolder BOOLEAN DEFAULT FALSE,
@@ -70,12 +71,12 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.TesterBacklog (
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbBacklog (
   refurb_backlog_id SERIAL PRIMARY KEY,
-  refurb_stn_id INT NOT NULL,
+  refurb_plan_id INT NOT NULL,
   battery_id INT NOT NULL,
   refurb_backlog_priority INT NOT NULL,
   refurb_backlog_start_date TIMESTAMP NOT NULL,
   refurb_backlog_end_date TIMESTAMP,
-  CONSTRAINT rb_refurb_stn_id FOREIGN KEY (refurb_stn_id) REFERENCES LabSvcSchema.RefurbStations(refurb_stn_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT refurb_plan_id FOREIGN KEY (refurb_plan_id) REFERENCES LabSvcSchema.RefurbPlans(refurb_plan_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbRecords (

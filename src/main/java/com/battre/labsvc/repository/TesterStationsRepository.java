@@ -1,6 +1,5 @@
 package com.battre.labsvc.repository;
 
-import com.battre.labsvc.model.LabPlanType;
 import com.battre.labsvc.model.TesterStationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
