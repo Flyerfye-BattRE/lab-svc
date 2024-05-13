@@ -1,15 +1,16 @@
 package com.battre.labsvc.enums;
 
-public enum TestResult {
+public enum RefurbStationClass {
     // Corresponds to values defined in the sql data init file under resources/initdb
-    PASS(1),
-    FAIL_RETRY(2),
-    FAIL_REJECT(3),
-    EXCEPTION(4);
+    NO_REFURB(0),
+    RESOLDER(1),
+    REPACK(2),
+    PROCESSOR_SWAP(3),
+    CAPACITOR_SWAP(4);
 
     private final int statusCode;
 
-    TestResult(int statusCode) {
+    RefurbStationClass(int statusCode) {
         this.statusCode = statusCode;
     }
 

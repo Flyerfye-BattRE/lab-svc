@@ -21,6 +21,9 @@ public class TesterBacklogType {
     @Column(name = "terminal_layout_id")
     private Integer terminalLayoutId;
 
+    @Column(name = "test_scheme_id")
+    private final Integer testSchemeId;
+
     @Column(name = "battery_id")
     private Integer batteryId;
 
@@ -33,8 +36,9 @@ public class TesterBacklogType {
     @Column(name = "tester_backlog_end_date")
     private Timestamp testerBacklogEndDate;
 
-    public TesterBacklogType(int batteryId, int terminalLayoutId) {
+    public TesterBacklogType(int batteryId, int testSchemeId, int terminalLayoutId) {
         this.batteryId = batteryId;
+        this.testSchemeId = testSchemeId;
         this.terminalLayoutId = terminalLayoutId;
         this.testerBacklogPriority = 50;
         this.testerBacklogStartDate = Timestamp.from(Instant.now());

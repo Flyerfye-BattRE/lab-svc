@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
-public interface TesterStationsRepository extends JpaRepository<TesterStationType, Integer> {
+public interface TesterStationRepository extends JpaRepository<TesterStationType, Integer> {
     @Query("SELECT testerStnId, terminalLayoutId " +
             "FROM TesterStationType " +
             "WHERE inUse = false AND activeBatteryId IS NULL " +

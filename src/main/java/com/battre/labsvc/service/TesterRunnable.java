@@ -1,7 +1,7 @@
 package com.battre.labsvc.service;
 
-import com.battre.labsvc.enums.TestResult;
-import com.battre.labsvc.repository.TesterStationsRepository;
+import com.battre.labsvc.enums.LabResult;
+import com.battre.labsvc.repository.TesterStationRepository;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -10,24 +10,27 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 
 public class TesterRunnable implements Runnable {
-    public static final int NUM_TEST_SCHEMES = 9;
+    public static final int NUM_REFURB_SCHEMES = 10;
     private static final Logger logger = Logger.getLogger(TesterRunnable.class.getName());
 
-    private final TesterStationsRepository testerStationsRepo;
+    private final TesterStationRepository testerStationsRepo;
     private final BlockingQueue<TesterResultRecord> resultQueue;
     private final int testerId;
+    private final int testSchemeId;
     private final int batteryId;
     private final int terminalLayoutId;
     private final Random random;
 
-    TesterRunnable(TesterStationsRepository testerStationsRepo,
+    TesterRunnable(TesterStationRepository testerStationsRepo,
                    BlockingQueue<TesterResultRecord> resultQueue,
                    int testerId,
+                   int testSchemeId,
                    int batteryId,
                    int terminalLayoutId) {
         this.testerStationsRepo = testerStationsRepo;
         this.resultQueue = resultQueue;
         this.testerId = testerId;
+        this.testSchemeId = testSchemeId;
         this.batteryId = batteryId;
         this.terminalLayoutId = terminalLayoutId;
         this.random = new Random();
@@ -48,9 +51,9 @@ public class TesterRunnable implements Runnable {
     }
 
     private TesterResultRecord performTest() {
-        int testSchemeId = random.nextInt(NUM_TEST_SCHEMES) + 1;
+        int refurbSchemeId = random.nextInt(NUM_REFURB_SCHEMES) + 1;
         int resultId = generateResultId();
-        return new TesterResultRecord(testerId, batteryId, testSchemeId, terminalLayoutId, resultId, Timestamp.from(Instant.now()));
+        return new TesterResultRecord(testerId, batteryId, testSchemeId, refurbSchemeId, terminalLayoutId, resultId, Timestamp.from(Instant.now()));
     }
 
     // Pass         (resultId=1) has 85% chance
@@ -61,11 +64,11 @@ public class TesterRunnable implements Runnable {
         logger.info("Tester [" + testerId + "]: chance " + resultChance);
 
         if (resultChance < 0.85) {
-            return TestResult.PASS.getStatusCode();
+            return LabResult.PASS.getStatusCode();
         } else if (resultChance < 0.95) {
-            return TestResult.FAIL_RETRY.getStatusCode();
+            return LabResult.FAIL_RETRY.getStatusCode();
         } else {
-            return TestResult.FAIL_REJECT.getStatusCode();
+            return LabResult.FAIL_REJECT.getStatusCode();
         }
     }
 }

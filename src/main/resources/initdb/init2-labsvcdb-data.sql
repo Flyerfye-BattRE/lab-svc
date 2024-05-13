@@ -15,16 +15,34 @@ WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.TestSchemes
 );
 
--- Insert statements for the "RefurbStationTypes" table
-INSERT INTO LabSvcSchema.RefurbStationTypes (refurb_station_type_id, station_type)
+-- Insert statements for the "RefurbSchemes" table
+INSERT INTO LabSvcSchema.RefurbSchemes (refurb_scheme_id, resolder, repack, processor_swap, capacitor_swap)
 SELECT * FROM (VALUES
-	(1, 'Soldering'),
-	(2, 'Repackaging'),
-	(3, 'Processor Swap'),
-	(4, 'Capacitor Swap')
-) AS v (refurb_station_type_id, station_type)
+	(1, true, false, false, false),
+	(2, false, true, false, false),
+	(3, false, false, true, false),
+	(4, false, false, false, true),
+	(5, false, false, false, false),
+	(6, true, false, true, false),
+	(7, false, true, false, true),
+	(8, true, true, true, false),
+	(9, false, true, true, true),
+	(10, true, true, true, true)
+) AS v (refurb_scheme_id, resolder, repack, processor_swap, capacitor_swap)
 WHERE NOT EXISTS (
-    SELECT 1 FROM LabSvcSchema.RefurbStationTypes
+    SELECT 1 FROM LabSvcSchema.RefurbSchemes
+);
+
+-- Insert statements for the "RefurbStationClasses" table
+INSERT INTO LabSvcSchema.RefurbStationClasses (refurb_station_class_id, station_class)
+SELECT * FROM (VALUES
+	(1, 'RESOLDER'),
+	(2, 'REPACK'),
+	(3, 'PROCESSOR_SWAP'),
+	(4, 'CAPACITOR_SWAP')
+) AS v (refurb_station_class_id, station_class)
+WHERE NOT EXISTS (
+    SELECT 1 FROM LabSvcSchema.RefurbStationClasses
 );
 
 -- Insert statements for the "TesterStations" table
@@ -42,13 +60,13 @@ WHERE NOT EXISTS (
 );
 
 -- Insert statements for the "RefurbStations" table
-INSERT INTO LabSvcSchema.RefurbStations (refurb_stn_id, refurb_station_type_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
+INSERT INTO LabSvcSchema.RefurbStations (refurb_stn_id, refurb_station_class_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 SELECT * FROM (VALUES
 	(1, 1, false, NULL::integer, '2023-10-28 22:10:54.168Z'::timestamp, '2023-10-28 22:10:54.168Z'::timestamp, '2024-04-28 22:10:54.168Z'::timestamp),
 	(2, 4, false, NULL::integer, '2023-10-21 18:10:54.234Z'::timestamp, '2023-10-21 18:10:54.234Z'::timestamp, '2024-04-21 18:10:54.234Z'::timestamp),
 	(3, 2, false, NULL::integer, '2023-10-19 02:10:54.754Z'::timestamp, '2023-10-19 02:10:54.754Z'::timestamp, '2024-04-19 02:10:54.754Z'::timestamp),
 	(4, 3, false, NULL::integer, '2023-10-08 13:10:54.121Z'::timestamp, '2023-10-08 13:10:54.121Z'::timestamp, '2024-04-08 13:10:54.121Z'::timestamp)
-) AS v (refurb_stn_id, refurb_station_type_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
+) AS v (refurb_stn_id, refurb_station_class_id, in_use, active_battery_id, last_active_date, last_calibration_date, next_calibration_date)
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.RefurbStations
 );
@@ -63,16 +81,4 @@ SELECT * FROM (VALUES
 ) AS v (result_type_id, result_type)
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.ResultTypes
-);
-
--- Insert statements for the "RefurbActions" table
-INSERT INTO LabSvcSchema.RefurbActions (refurb_action_id, refurb_action)
-SELECT * FROM (VALUES
-	(1, 'Retest'),
-	(2, 'Next Refurb Step'),
-	(3, 'Move to Storage'),
-	(4, 'Reject')
-) AS v (refurb_action_id, refurb_action)
-WHERE NOT EXISTS (
-    SELECT 1 FROM LabSvcSchema.RefurbActions
 );

@@ -16,30 +16,29 @@ public class TesterRecordType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tester_record_id")
     private Integer testerRecordId;
-
     @Column(name = "tester_stn_id", nullable = false)
     private final Integer testerStnId;
-
     @Column(name = "battery_id", nullable = false)
     private final Integer batteryId;
-
     @Column(name = "test_scheme_id", nullable = false)
     private final Integer testSchemeId;
-
+    @Column(name = "refurb_scheme_id", nullable = false)
+    private final Integer refurbSchemeId;
     @Column(name = "result_type_id", nullable = false)
     private final Integer resultTypeId;
-
     @Column(name = "test_date", nullable = false)
     private final Timestamp testDate;
 
     public TesterRecordType(Integer testerStnId,
                             Integer batteryId,
                             Integer testSchemeId,
+                            Integer refurbSchemeId,
                             Integer resultTypeId,
                             Timestamp testDate) {
         this.testerStnId = testerStnId;
         this.batteryId = batteryId;
         this.testSchemeId = testSchemeId;
+        this.refurbSchemeId = refurbSchemeId;
         this.resultTypeId = resultTypeId;
         this.testDate = testDate;
     }
@@ -58,6 +57,10 @@ public class TesterRecordType {
 
     public Integer getTestSchemeId() {
         return testSchemeId;
+    }
+
+    public Integer getRefurbSchemeId() {
+        return refurbSchemeId;
     }
 
     public Integer getResultTypeId() {

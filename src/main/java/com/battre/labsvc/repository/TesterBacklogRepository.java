@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface TesterBacklogRepository extends JpaRepository<TesterBacklogType, Integer> {
-    @Query("SELECT testerBacklogId, terminalLayoutId, batteryId " +
+    @Query("SELECT testerBacklogId, terminalLayoutId, testSchemeId, batteryId " +
             "FROM TesterBacklogType " +
             "WHERE testerBacklogEndDate = NULL " +
             "ORDER BY testerBacklogPriority ASC, testerBacklogId ASC ")

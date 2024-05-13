@@ -34,11 +34,20 @@ public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> 
             "WHERE labPlanId = :labPlanId")
     void setRefurbPlanForLabPlan(@Param("labPlanId") int labPlanId, @Param("refurbPlanId") int refurbPlanId);
 
-
     @Transactional
     @Modifying
     @Query("UPDATE LabPlanType " +
             "SET labPlanEndDate = :labPlanEndDate " +
             "WHERE labPlanId = :labPlanId")
     void endLabPlan(@Param("labPlanId") int labPlanId, @Param("labPlanEndDate") Timestamp labPlanEndDate);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE LabPlanType " +
+            "SET labPlanEndDate = :labPlanEndDate " +
+            "WHERE refurbPlanId = :refurbPlanId")
+    void endLabPlanEntryForRefurbPlan(@Param("refurbPlanId") int refurbPlanId,
+                                      @Param("labPlanEndDate") Timestamp labPlanEndDate);
+
+
 }

@@ -46,7 +46,7 @@ public class LabSvc {
     }
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
-        //create new lab plan records for all the batteries
+        // create new lab plan records for all the batteries
         for (BatteryIdType batteryInfo : batteryIdsTypes) {
             LabPlanType labPlan = new LabPlanType(
                     batteryInfo.getBatteryId()
@@ -59,10 +59,10 @@ public class LabSvc {
     }
 
     public boolean addBatteriesToTesterBacklog(List<BatteryIdType> batteryIdsTypes) {
-        //query spec svc for terminal_layout_ids per batteryId
+        // query spec svc for terminal_layout_ids per batteryId
         Set<Integer> batteryTypesSet = new HashSet<>();
 
-        //de-duplicate battery types before querying for corresponding terminal ids
+        // de-duplicate battery types before querying for corresponding terminal ids
         for (BatteryIdType batteryInfo : batteryIdsTypes) {
             batteryTypesSet.add(batteryInfo.getBatteryTypeId());
         }
@@ -79,6 +79,9 @@ public class LabSvc {
         for (BatteryIdType batteryInfo : batteryIdsTypes) {
             TesterBacklogType testerBacklogEntry = new TesterBacklogType(
                     batteryInfo.getBatteryId(),
+                    // TODO: Modify test scheme ID to be returned from SpecSvc.getBatteryTerminalIdMap gRPC call
+                    // batteryInfo.getTestSchemeId(),
+                    1,
                     batteryTypeToTerminalIds.get(batteryInfo.getBatteryTypeId())
             );
 

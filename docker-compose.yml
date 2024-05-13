@@ -9,6 +9,8 @@ services:
   db:
     image: postgres:16.2-alpine3.19
     container_name: labsvc_postgres_db
+    ports:
+      - "5434:5432"
     env_file:
       - .env
     volumes:

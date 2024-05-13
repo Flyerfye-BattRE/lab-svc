@@ -17,44 +17,57 @@ public class RefurbPlanType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refurb_plan_id")
     private Integer refurbPlanId;
-
     @Column(name = "battery_id", nullable = false)
     private final Integer batteryId;
 
-    @Column(name = "refurb_start_date", nullable = false)
-    private final Timestamp refurbStartDate;
+    @Column(name = "refurb_plan_priority", nullable = false)
+    private final Integer refurbPlanPriority;
 
-    @Column(name = "refurb_end_date")
-    private Timestamp refurbEndDate;
+    @Column(name = "refurb_plan_start_date", nullable = false)
+    private final Timestamp refurbPlanStartDate;
+
+    @Column(name = "refurb_plan_end_date")
+    private Timestamp refurbPlanEndDate;
+
+    @Column(name = "available")
+    private final Boolean available = true;
 
     @Column(name = "resolder")
     private Boolean resolder = false;
 
+    @Column(name = "resolder_record_id")
+    private Integer resolderRecordId;
+
     @Column(name = "repack")
     private Boolean repack = false;
+
+    @Column(name = "repack_record_id")
+    private Integer repackRecordId;
 
     @Column(name = "processor_swap")
     private Boolean processorSwap = false;
 
+    @Column(name = "processor_swap_record_id")
+    private Integer processorSwapRecordId;
+
     @Column(name = "capacitor_swap")
     private Boolean capacitorSwap = false;
 
-    @Column(name = "retest")
-    private Boolean retest = false;
+    @Column(name = "capacitor_swap_record_id")
+    private Integer capacitorSwapRecordId;
 
     public RefurbPlanType(Integer batteryId,
                           Boolean resolder,
                           Boolean repack,
                           Boolean processorSwap,
-                          Boolean capacitorSwap,
-                          Boolean retest) {
+                          Boolean capacitorSwap) {
         this.batteryId = batteryId;
-        this.refurbStartDate = Timestamp.from(Instant.now());
+        this.refurbPlanPriority = 50;
+        this.refurbPlanStartDate = Timestamp.from(Instant.now());
         this.resolder = resolder;
         this.repack = repack;
         this.processorSwap = processorSwap;
         this.capacitorSwap = capacitorSwap;
-        this.retest = retest;
     }
 
     public Integer getRefurbPlanId() {
@@ -65,31 +78,51 @@ public class RefurbPlanType {
         return batteryId;
     }
 
-    public Timestamp getRefurbStartDate() {
-        return refurbStartDate;
+    public Integer getRefurbPlanPriority() {
+        return refurbPlanPriority;
     }
 
-    public Timestamp getRefurbEndDate() {
-        return refurbEndDate;
+    public Timestamp getRefurbPlanStartDate() {
+        return refurbPlanStartDate;
+    }
+
+    public Timestamp getRefurbPlanEndDate() {
+        return refurbPlanEndDate;
+    }
+
+    public Boolean getAvailable() {
+        return available;
     }
 
     public Boolean getResolder() {
         return resolder;
     }
 
+    public Integer getResolderRecordId() {
+        return resolderRecordId;
+    }
+
     public Boolean getRepack() {
         return repack;
+    }
+
+    public Integer getRepackRecordId() {
+        return repackRecordId;
     }
 
     public Boolean getProcessorSwap() {
         return processorSwap;
     }
 
+    public Integer getProcessorSwapRecordId() {
+        return processorSwapRecordId;
+    }
+
     public Boolean getCapacitorSwap() {
         return capacitorSwap;
     }
 
-    public Boolean getRetest() {
-        return retest;
+    public Integer getCapacitorSwapRecordId() {
+        return capacitorSwapRecordId;
     }
 }
