@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,14 +41,14 @@ public class LabSvcImplTests {
     void testProcessLabBatteriesSuccess() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
-        when(labSvc.addBatteriesToLabPlans(any())).thenReturn(true);
-        when(labSvc.addBatteriesToTesterBacklog(any())).thenReturn(true);
+        when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(true);
+        when(labSvc.addBatteriesToTesterBacklog(any(List.class))).thenReturn(true);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
         labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
-        verify(labSvc).addBatteriesToLabPlans(any());
-        verify(labSvc).addBatteriesToTesterBacklog(any());
+        verify(labSvc).addBatteriesToLabPlans(any(List.class));
+        verify(labSvc).addBatteriesToTesterBacklog(any(List.class));
         verify(responseProcessLabBatteriesResponse).onNext(ProcessLabBatteriesResponse.newBuilder().setSuccess(true).build());
         verify(responseProcessLabBatteriesResponse).onCompleted();
     }
@@ -55,12 +57,12 @@ public class LabSvcImplTests {
     void testProcessLabBatteriesAddBatteriesToLabPlansFail() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
-        when(labSvc.addBatteriesToLabPlans(any())).thenReturn(false);
+        when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(false);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
         labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
-        verify(labSvc).addBatteriesToLabPlans(any());
+        verify(labSvc).addBatteriesToLabPlans(any(List.class));
         verify(responseProcessLabBatteriesResponse).onNext(ProcessLabBatteriesResponse.newBuilder().setSuccess(false).build());
         verify(responseProcessLabBatteriesResponse).onCompleted();
     }
@@ -69,14 +71,14 @@ public class LabSvcImplTests {
     void testProcessLabBatteriesAddBatteriesToTesterBacklogFail() {
         labSvcImpl = new LabSvcImpl(labSvc);
 
-        when(labSvc.addBatteriesToLabPlans(any())).thenReturn(true);
-        when(labSvc.addBatteriesToTesterBacklog(any())).thenReturn(false);
+        when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(true);
+        when(labSvc.addBatteriesToTesterBacklog(any(List.class))).thenReturn(false);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
         labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
-        verify(labSvc).addBatteriesToLabPlans(any());
-        verify(labSvc).addBatteriesToTesterBacklog(any());
+        verify(labSvc).addBatteriesToLabPlans(any(List.class));
+        verify(labSvc).addBatteriesToTesterBacklog(any(List.class));
         verify(responseProcessLabBatteriesResponse).onNext(ProcessLabBatteriesResponse.newBuilder().setSuccess(false).build());
         verify(responseProcessLabBatteriesResponse).onCompleted();
     }

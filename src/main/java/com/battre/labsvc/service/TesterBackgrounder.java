@@ -31,7 +31,6 @@ public class TesterBackgrounder implements Runnable {
     private final long checkInterval = 5000;
     private final Object lock = new Object();
     private final ExecutorService testerThreadPool;
-    private final ExecutorService resultProcessorThread;
     private final BlockingQueue<TesterResultRecord> testerResultQueue;
     private volatile boolean active = true;
 
@@ -48,9 +47,6 @@ public class TesterBackgrounder implements Runnable {
         this.testerResultQueue = testerResultQueue;
 
         testerThreadPool = Executors.newCachedThreadPool();
-        resultProcessorThread = Executors.newSingleThreadExecutor();
-
-        resultProcessorThread.submit(context.getBean(TesterResultProcessor.class));
     }
 
     @Override
@@ -96,7 +92,7 @@ public class TesterBackgrounder implements Runnable {
         }
     }
 
-    private void checkAndAllocateTesters() {
+    void checkAndAllocateTesters() {
         logger.info("Running checkAndAllocateTesters");
         List<Object[]> testerBacklog = testerBacklogRepo.getPendingTesterBacklog();
         Map<Integer, List<Integer>> availTesters = getAvailableTesterStationsGroupedByLayout();
@@ -111,9 +107,9 @@ public class TesterBackgrounder implements Runnable {
             // if the desired terminal layout is present in the avail testers mapping
             if (availTesters.containsKey(terminalLayoutId) && !availTesters.get(terminalLayoutId).isEmpty()) {
                 int selectedTester = availTesters.get(terminalLayoutId).get(0);
+                logger.info("Tester backlog [" + testerBacklogId + "] tester " + selectedTester + " found");
                 boolean sendSuccess =
                         sendBatteryToTester(testerBacklogId, selectedTester, batteryId, testSchemeId, terminalLayoutId);
-                logger.info("Tester backlog [" + testerBacklogId + "] tester " + selectedTester + " found");
 
                 // remove the tester from the list of available testers if battery sent successfully
                 if (sendSuccess) {

@@ -60,6 +60,16 @@ public class RefurbResultProcessor implements Runnable {
 
     }
 
+    // used for testing
+    public void setOpsSvcClient(OpsSvcGrpc.OpsSvcStub opsSvcClient) {
+        this.opsSvcClient = opsSvcClient;
+    }
+
+    public void setStorageSvcClient(StorageSvcGrpc.StorageSvcStub storageSvcClient) {
+        this.storageSvcClient = storageSvcClient;
+    }
+
+
     @Override
     public void run() {
         try {
@@ -89,7 +99,7 @@ public class RefurbResultProcessor implements Runnable {
         triggerResultProcessing();  // Ensure the loop exits if it is waiting
     }
 
-    private void processRefurbResults() throws InterruptedException {
+    void processRefurbResults() throws InterruptedException {
         logger.info("Running processRefurbResults");
         // Block the thread until resultQueue contains a result
         //      For each result
@@ -144,14 +154,14 @@ public class RefurbResultProcessor implements Runnable {
             }
         }
 
+        // if no refurb was necessary, no station needs to be updated
+        if (refurbStnClass != RefurbStationClass.NO_REFURB.toString()) {
+            refurbStationsRepo.markRefurbStnFree(rrr.refurbStnId(), Timestamp.from(Instant.now()));
+        }
+
         if (rrr.resultTypeId() == LabResult.PASS.getStatusCode()) {
             // Pass
             logger.info("Battery [" + rrr.batteryId() + "] PASSES: Refurb type is " + rrr.refurbStnClass());
-
-            // if no refurb was necessary, no station needs to be updated
-            if (refurbStnClass != RefurbStationClass.NO_REFURB.toString()) {
-                refurbStationsRepo.markRefurbStnFree(rrr.refurbStnId(), Timestamp.from(Instant.now()));
-            }
 
             // Allows battery to continue to next step if there are additional refurb classes to complete
             refurbPlanRepo.markRefurbPlanAvail(rrr.refurbPlanId());
@@ -169,7 +179,6 @@ public class RefurbResultProcessor implements Runnable {
             // Fail-Retry
             logger.info("Battery [" + rrr.batteryId() + "] FAILS > Retry refurb");
 
-            refurbStationsRepo.markRefurbStnFree(rrr.refurbStnId(), Timestamp.from(Instant.now()));
             refurbPlanRepo.markRefurbPlanAvail(rrr.refurbPlanId());
         } else if (rrr.resultTypeId() == LabResult.FAIL_REJECT.getStatusCode()) {
             // Fail-Reject
@@ -247,7 +256,7 @@ public class RefurbResultProcessor implements Runnable {
                 logger.severe("updateStorageSvcRemoveBattery() errored: " + t.getMessage());
             }
 
-            
+
             @Override
             public void onCompleted() {
                 logger.info("updateStorageSvcRemoveBattery() completed");

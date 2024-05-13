@@ -67,6 +67,15 @@ public class TesterResultProcessor implements Runnable {
 
     }
 
+    // used for testing
+    public void setOpsSvcClient(OpsSvcGrpc.OpsSvcStub opsSvcClient) {
+        this.opsSvcClient = opsSvcClient;
+    }
+
+    public void setStorageSvcClient(StorageSvcGrpc.StorageSvcStub storageSvcClient) {
+        this.storageSvcClient = storageSvcClient;
+    }
+
     @Override
     public void run() {
         try {
@@ -96,7 +105,7 @@ public class TesterResultProcessor implements Runnable {
         triggerResultProcessing();  // Ensure the loop exits if it is waiting
     }
 
-    private void processTesterResults() throws InterruptedException {
+    void processTesterResults() throws InterruptedException {
         logger.info("Running processTesterResults");
         // Block the thread until resultQueue contains a result
         //      For each result

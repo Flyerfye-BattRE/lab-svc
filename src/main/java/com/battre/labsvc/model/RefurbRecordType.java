@@ -13,8 +13,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "RefurbRecords", schema = "LabSvcSchema")
 public class RefurbRecordType {
-    @Column(name = "refurb_date", nullable = false)
-    private Timestamp refurbDate;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refurb_record_id")
@@ -29,6 +27,8 @@ public class RefurbRecordType {
     private Integer batteryId;
     @Column(name = "result_type_id", nullable = false)
     private Integer resultTypeId;
+    @Column(name = "refurb_date", nullable = false)
+    private Timestamp refurbDate;
 
     public RefurbRecordType() {
         // Default constructor for Spring Data JPA
@@ -51,6 +51,11 @@ public class RefurbRecordType {
 
     public Integer getRefurbRecordId() {
         return refurbRecordId;
+    }
+
+    // added for testing purposes
+    public void setRefurbRecordId(Integer refurbRecordId) {
+        this.refurbRecordId = refurbRecordId;
     }
 
     public Integer getRefurbStnId() {

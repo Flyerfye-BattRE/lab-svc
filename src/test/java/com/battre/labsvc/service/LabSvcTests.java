@@ -42,7 +42,7 @@ public class LabSvcTests {
             observer.onNext(response);
             observer.onCompleted();
             return null;
-        }).when(specSvcClient).getBatteryTerminalLayouts(any(GetBatteryTerminalLayoutsRequest.class), any());
+        }).when(specSvcClient).getBatteryTerminalLayouts(any(GetBatteryTerminalLayoutsRequest.class), any(StreamObserver.class));
     }
 
     @BeforeEach

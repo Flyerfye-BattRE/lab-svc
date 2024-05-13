@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -47,7 +49,7 @@ public class RefurbStationRepositoryTest {
 
         // Verify the result
         RefurbStationType result = refurbStationRepo.findByRefurbStnId(2);
-        assertEquals(true, result.isInUse());
+        assertTrue(result.isInUse());
     }
 
     @Test
@@ -58,6 +60,6 @@ public class RefurbStationRepositoryTest {
 
         // Verify the result
         RefurbStationType result = refurbStationRepo.findByRefurbStnId(1);
-        assertEquals(false, result.isInUse());
+        assertFalse(result.isInUse());
     }
 }

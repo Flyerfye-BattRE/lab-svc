@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -27,9 +29,9 @@ public class RefurbSchemesRepositoryTest {
         Optional<RefurbSchemeType> result = refurbSchemesRepo.getDataForRefurbScheme(2);
 
         // Verify the result
-        assertEquals(false, result.get().isResolder());
-        assertEquals(true, result.get().isRepack());
-        assertEquals(false, result.get().isProcessorSwap());
-        assertEquals(true, result.get().isCapacitorSwap());
+        assertFalse(result.get().isResolder());
+        assertTrue(result.get().isRepack());
+        assertFalse(result.get().isProcessorSwap());
+        assertTrue(result.get().isCapacitorSwap());
     }
 }

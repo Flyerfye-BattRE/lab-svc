@@ -37,7 +37,7 @@ public class TesterRecordType {
         this.testSchemeId = -1;
         this.refurbSchemeId = -1;
         this.resultTypeId = -1;
-        this.testDate = Timestamp.from(Instant.now());;
+        this.testDate = Timestamp.from(Instant.now());
     }
 
     public TesterRecordType(Integer testerStnId,
@@ -56,6 +56,11 @@ public class TesterRecordType {
 
     public Integer getTesterRecordId() {
         return testerRecordId;
+    }
+
+    // added for testing purposes
+    public void setTesterRecordId(Integer testerRecordId) {
+        this.testerRecordId = testerRecordId;
     }
 
     public Integer getTesterStnId() {

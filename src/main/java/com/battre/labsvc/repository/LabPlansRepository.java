@@ -16,6 +16,7 @@ public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> 
     // Used to update lab plan and validate that there is only one active lab plan per battery
     // Leverages JPA built in query func
     LabPlanType findByLabPlanId(int labPlanId);
+
     LabPlanType findByRefurbPlanId(int refurbPlanId);
 
     @Query("SELECT labPlanId " +

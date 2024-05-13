@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -26,10 +27,10 @@ public class TestSchemesRepositoryTest {
         Optional<TestSchemeType> result = testSchemesRepo.getDataForTestScheme(6);
 
         // Verify the result
-        assertEquals(false, result.get().isCheckerboard());
-        assertEquals(true, result.get().isNullLine());
-        assertEquals(false, result.get().isVaporSim());
-        assertEquals(true, result.get().isBlackout());
-        assertEquals(false, result.get().isOvenScreen());
+        assertFalse(result.get().isCheckerboard());
+        assertTrue(result.get().isNullLine());
+        assertFalse(result.get().isVaporSim());
+        assertTrue(result.get().isBlackout());
+        assertFalse(result.get().isOvenScreen());
     }
 }

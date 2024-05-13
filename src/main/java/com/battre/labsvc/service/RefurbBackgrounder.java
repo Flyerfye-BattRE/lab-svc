@@ -33,7 +33,6 @@ public class RefurbBackgrounder implements Runnable {
     private final long checkInterval = 5000;
     private final Object lock = new Object();
     private final ExecutorService refurbThreadPool;
-    private final ExecutorService refurbProcessorThread;
     private final BlockingQueue<RefurbResultRecord> refurbResultQueue;
     private volatile boolean active = true;
 
@@ -50,7 +49,6 @@ public class RefurbBackgrounder implements Runnable {
         this.refurbResultQueue = refurbResultQueue;
 
         refurbThreadPool = Executors.newCachedThreadPool();
-        refurbProcessorThread = Executors.newSingleThreadExecutor();
     }
 
     @Override
@@ -96,7 +94,7 @@ public class RefurbBackgrounder implements Runnable {
         }
     }
 
-    private void checkAndAllocateRefurb() throws InterruptedException {
+    void checkAndAllocateRefurb() throws InterruptedException {
         logger.info("Running checkAndAllocateRefurb");
         List<Object[]> refurbPlans = refurbPlanRepo.getPendingRefurbPlans();
         Map<String, List<Integer>> availRefurbStns = getAvailableRefurbStnsGroupedByClass();
@@ -137,12 +135,12 @@ public class RefurbBackgrounder implements Runnable {
                                        RefurbStationClass stationClass, Map<String, List<Integer>> availRefurbStns) {
         if (condition && checkRefurbStnAvail(stationClass, availRefurbStns)) {
             int selectedRefurbStn = availRefurbStns.get(stationClass.toString()).get(0);
+            logger.info("Backlog [" + refurbPlanId + "] tester " + selectedRefurbStn + " found");
             boolean sendSuccess = sendBatteryToRefurbStn(
                     refurbPlanId,
                     selectedRefurbStn,
                     stationClass,
                     batteryId);
-            logger.info("Backlog [" + refurbPlanId + "] tester " + selectedRefurbStn + " found");
 
             if (sendSuccess) {
                 logger.info("Backlog [" + refurbPlanId + "] added to tester " + selectedRefurbStn);

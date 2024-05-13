@@ -31,6 +31,14 @@ public class RefurbSchemeType {
         // Default constructor for Spring Data JPA
     }
 
+    public RefurbSchemeType(Integer refurbSchemeId, boolean resolder, boolean repack, boolean processorSwap, boolean capacitorSwap) {
+        this.refurbSchemeId = refurbSchemeId;
+        this.resolder = resolder;
+        this.repack = repack;
+        this.processorSwap = processorSwap;
+        this.capacitorSwap = capacitorSwap;
+    }
+
     public Integer getRefurbSchemeId() {
         return refurbSchemeId;
     }

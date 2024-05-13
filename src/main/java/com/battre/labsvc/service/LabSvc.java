@@ -41,6 +41,7 @@ public class LabSvc {
 
     }
 
+    // used for testing
     public void setSpecSvcClient(SpecSvcGrpc.SpecSvcStub specSvcClient) {
         this.specSvcClient = specSvcClient;
     }

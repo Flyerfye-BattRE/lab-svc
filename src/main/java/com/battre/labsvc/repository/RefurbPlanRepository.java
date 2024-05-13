@@ -15,6 +15,7 @@ import java.util.List;
 public interface RefurbPlanRepository extends JpaRepository<RefurbPlanType, Integer> {
     // Leverages JPA built in query func
     RefurbPlanType findByRefurbPlanId(int refurbPlanId);
+
     @Transactional
     @Modifying
     @Query("UPDATE RefurbPlanType " +

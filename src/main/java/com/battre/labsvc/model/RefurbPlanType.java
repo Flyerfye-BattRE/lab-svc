@@ -77,6 +77,11 @@ public class RefurbPlanType {
         this.capacitorSwap = capacitorSwap;
     }
 
+    // added for testing purposes
+    public void setRefurbPlanId(Integer refurbPlanId) {
+        this.refurbPlanId = refurbPlanId;
+    }
+
     public Integer getRefurbPlanId() {
         return refurbPlanId;
     }

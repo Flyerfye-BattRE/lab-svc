@@ -58,7 +58,7 @@ public class LabPlansRepositoryTest {
     @Sql(scripts = {"/testdb/test-lpr-populateLabPlans.sql"})
     public void testEndLabPlan() {
         Timestamp endDate = Timestamp.valueOf("2024-05-10 12:00:00");
-        labPlansRepo.endLabPlan(1,  endDate);
+        labPlansRepo.endLabPlan(1, endDate);
 
         // Verify the result
         LabPlanType result = labPlansRepo.findByLabPlanId(1);
