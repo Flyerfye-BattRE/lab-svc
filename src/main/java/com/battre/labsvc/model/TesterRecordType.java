@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "TesterRecords", schema = "LabSvcSchema")
@@ -17,17 +18,27 @@ public class TesterRecordType {
     @Column(name = "tester_record_id")
     private Integer testerRecordId;
     @Column(name = "tester_stn_id", nullable = false)
-    private final Integer testerStnId;
+    private Integer testerStnId;
     @Column(name = "battery_id", nullable = false)
-    private final Integer batteryId;
+    private Integer batteryId;
     @Column(name = "test_scheme_id", nullable = false)
-    private final Integer testSchemeId;
+    private Integer testSchemeId;
     @Column(name = "refurb_scheme_id", nullable = false)
-    private final Integer refurbSchemeId;
+    private Integer refurbSchemeId;
     @Column(name = "result_type_id", nullable = false)
-    private final Integer resultTypeId;
+    private Integer resultTypeId;
     @Column(name = "test_date", nullable = false)
-    private final Timestamp testDate;
+    private Timestamp testDate;
+
+    public TesterRecordType() {
+        // Default constructor for Spring Data JPA
+        this.testerStnId = -1;
+        this.batteryId = -1;
+        this.testSchemeId = -1;
+        this.refurbSchemeId = -1;
+        this.resultTypeId = -1;
+        this.testDate = Timestamp.from(Instant.now());;
+    }
 
     public TesterRecordType(Integer testerStnId,
                             Integer batteryId,

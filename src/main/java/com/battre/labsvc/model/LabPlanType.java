@@ -36,6 +36,10 @@ public class LabPlanType {
     @JoinColumn(name = "refurb_plan_id")
     private int refurbPlanId;
 
+    public LabPlanType() {
+        // Default constructor for Spring Data JPA
+    }
+
     public LabPlanType(int batteryId) {
         this.batteryId = batteryId;
         this.labPlanStartDate = Timestamp.from(Instant.now());

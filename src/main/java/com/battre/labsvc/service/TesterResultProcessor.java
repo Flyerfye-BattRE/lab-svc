@@ -114,7 +114,7 @@ public class TesterResultProcessor implements Runnable {
         TesterRecordType savedRecord = testerRecordsRepo.save(trt);
 
         // Update LabPlan with tester record id and check exactly 1 open plan
-        List<Integer> labPlans = labPlansRepo.getLabPlansForBatteryId(trr.batteryId());
+        List<Integer> labPlans = labPlansRepo.getLabPlanIdsForBatteryId(trr.batteryId());
         if (labPlans.size() != 1) {
             logger.severe("# of lab plans [" + labPlans.size() + "] for battery [" + trr.batteryId() + "] is not exactly 1: " + labPlans);
         }

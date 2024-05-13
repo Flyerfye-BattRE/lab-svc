@@ -14,11 +14,15 @@ import java.util.List;
 @Repository
 public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> {
     // Used to update lab plan and validate that there is only one active lab plan per battery
+    // Leverages JPA built in query func
+    LabPlanType findByLabPlanId(int labPlanId);
+    LabPlanType findByRefurbPlanId(int refurbPlanId);
+
     @Query("SELECT labPlanId " +
             "FROM LabPlanType " +
             "WHERE batteryId = :batteryId AND labPlanEndDate IS NULL " +
             "ORDER BY labPlanId DESC")
-    List<Integer> getLabPlansForBatteryId(@Param("batteryId") int batteryId);
+    List<Integer> getLabPlanIdsForBatteryId(@Param("batteryId") int batteryId);
 
     @Transactional
     @Modifying

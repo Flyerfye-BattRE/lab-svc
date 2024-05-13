@@ -113,7 +113,7 @@ public class RefurbResultProcessor implements Runnable {
         }
 
         // Update LabPlan with tester record id and check exactly 1 open plan
-        List<Integer> labPlans = labPlansRepo.getLabPlansForBatteryId(rrr.batteryId());
+        List<Integer> labPlans = labPlansRepo.getLabPlanIdsForBatteryId(rrr.batteryId());
         if (labPlans.size() != 1) {
             logger.severe("# of lab plans [" + labPlans.size() + "] for battery [" + rrr.batteryId() + "] is not exactly 1: " + labPlans);
             logger.severe("Refurb Info: " + rrr);
@@ -156,7 +156,7 @@ public class RefurbResultProcessor implements Runnable {
             // Allows battery to continue to next step if there are additional refurb classes to complete
             refurbPlanRepo.markRefurbPlanAvail(rrr.refurbPlanId());
 
-            // Move to storage/update Ops Svc if there are none
+            // Move to storage/update Ops Svc if there are no more refurb steps to complete
             if (refurbPlanRepo.checkRefurbPlanCompleted(rrr.refurbPlanId())) {
                 logger.info("Refurb Plan [" + rrr.refurbPlanId() + "] COMPLETED for Battery [" + rrr.batteryId() + "]");
 

@@ -22,7 +22,7 @@ public class TesterBacklogType {
     private Integer terminalLayoutId;
 
     @Column(name = "test_scheme_id")
-    private final Integer testSchemeId;
+    private Integer testSchemeId;
 
     @Column(name = "battery_id")
     private Integer batteryId;
@@ -35,6 +35,10 @@ public class TesterBacklogType {
 
     @Column(name = "tester_backlog_end_date")
     private Timestamp testerBacklogEndDate;
+
+    public TesterBacklogType() {
+        // Default constructor for Spring Data JPA
+    }
 
     public TesterBacklogType(int batteryId, int testSchemeId, int terminalLayoutId) {
         this.batteryId = batteryId;

@@ -36,7 +36,11 @@ public class TesterStationType {
     @Column(name = "next_calibration_date", nullable = false)
     private Timestamp nextCalibrationDate;
 
-    public Boolean getInUse() {
+    public TesterStationType() {
+        // Default constructor for Spring Data JPA
+    }
+
+    public Boolean isInUse() {
         return inUse;
     }
 

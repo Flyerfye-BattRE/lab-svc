@@ -18,6 +18,10 @@ public class RefurbStationClassType {
     @Column(name = "station_class", nullable = false, length = 45)
     private String stationClass;
 
+    public RefurbStationClassType() {
+        // Default constructor for Spring Data JPA
+    }
+
     public Integer getRefurbStationClassId() {
         return refurbStationClassId;
     }

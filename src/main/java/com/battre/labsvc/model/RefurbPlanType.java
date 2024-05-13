@@ -18,19 +18,19 @@ public class RefurbPlanType {
     @Column(name = "refurb_plan_id")
     private Integer refurbPlanId;
     @Column(name = "battery_id", nullable = false)
-    private final Integer batteryId;
+    private Integer batteryId;
 
     @Column(name = "refurb_plan_priority", nullable = false)
-    private final Integer refurbPlanPriority;
+    private Integer refurbPlanPriority;
 
     @Column(name = "refurb_plan_start_date", nullable = false)
-    private final Timestamp refurbPlanStartDate;
+    private Timestamp refurbPlanStartDate;
 
     @Column(name = "refurb_plan_end_date")
     private Timestamp refurbPlanEndDate;
 
     @Column(name = "available")
-    private final Boolean available = true;
+    private Boolean available = true;
 
     @Column(name = "resolder")
     private Boolean resolder = false;
@@ -55,6 +55,13 @@ public class RefurbPlanType {
 
     @Column(name = "capacitor_swap_record_id")
     private Integer capacitorSwapRecordId;
+
+    public RefurbPlanType() {
+        // Default constructor for Spring Data JPA
+        this.batteryId = -1;
+        this.refurbPlanPriority = 50;
+        this.refurbPlanStartDate = Timestamp.from(Instant.now());
+    }
 
     public RefurbPlanType(Integer batteryId,
                           Boolean resolder,
@@ -90,7 +97,7 @@ public class RefurbPlanType {
         return refurbPlanEndDate;
     }
 
-    public Boolean getAvailable() {
+    public Boolean isAvailable() {
         return available;
     }
 

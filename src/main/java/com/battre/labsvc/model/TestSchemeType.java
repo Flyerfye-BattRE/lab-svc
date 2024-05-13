@@ -30,6 +30,10 @@ public class TestSchemeType {
     @Column(name = "oven_screen", nullable = false)
     private boolean ovenScreen;
 
+    public TestSchemeType() {
+        // Default constructor for Spring Data JPA
+    }
+
     public Integer getTestSchemeId() {
         return testSchemeId;
     }

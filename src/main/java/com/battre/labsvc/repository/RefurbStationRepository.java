@@ -13,6 +13,9 @@ import java.util.List;
 
 @Repository
 public interface RefurbStationRepository extends JpaRepository<RefurbStationType, Integer> {
+    // Leverages JPA built in query func
+    RefurbStationType findByRefurbStnId(int refurbStnId);
+
     @Query("SELECT rst.refurbStnId, rsct.stationClass " +
             "FROM RefurbStationType AS rst " +
             "INNER JOIN RefurbStationClassType AS rsct ON rsct.refurbStationClassId = rst.refurbStationClassId " +

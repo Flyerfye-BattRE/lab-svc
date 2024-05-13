@@ -13,6 +13,9 @@ import java.util.List;
 
 @Repository
 public interface TesterStationRepository extends JpaRepository<TesterStationType, Integer> {
+    // Leverages JPA built in query func
+    TesterStationType findByTesterStnId(int testerStnId);
+    
     @Query("SELECT testerStnId, terminalLayoutId " +
             "FROM TesterStationType " +
             "WHERE inUse = false AND activeBatteryId IS NULL " +

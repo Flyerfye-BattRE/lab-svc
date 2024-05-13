@@ -27,6 +27,10 @@ public class RefurbSchemeType {
     @Column(name = "capacitor_swap", nullable = false)
     private boolean capacitorSwap;
 
+    public RefurbSchemeType() {
+        // Default constructor for Spring Data JPA
+    }
+
     public Integer getRefurbSchemeId() {
         return refurbSchemeId;
     }

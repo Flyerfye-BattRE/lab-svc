@@ -13,6 +13,9 @@ import java.util.List;
 
 @Repository
 public interface TesterBacklogRepository extends JpaRepository<TesterBacklogType, Integer> {
+    // Leverages JPA built in query func
+    TesterBacklogType findByTesterBacklogId(int testerBacklogId);
+
     @Query("SELECT testerBacklogId, terminalLayoutId, testSchemeId, batteryId " +
             "FROM TesterBacklogType " +
             "WHERE testerBacklogEndDate = NULL " +

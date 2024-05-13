@@ -8,26 +8,32 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "RefurbRecords", schema = "LabSvcSchema")
 public class RefurbRecordType {
     @Column(name = "refurb_date", nullable = false)
-    private final Timestamp refurbDate;
+    private Timestamp refurbDate;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refurb_record_id")
     private Integer refurbRecordId;
     @Column(name = "refurb_plan_id", nullable = false)
-    private final Integer refurbPlanId;
+    private Integer refurbPlanId;
     @Column(name = "refurb_stn_id", nullable = false)
-    private final Integer refurbStnId;
+    private Integer refurbStnId;
     @Column(name = "station_class", nullable = false)
-    private final String stationClass;
+    private String stationClass;
     @Column(name = "battery_id", nullable = false)
-    private final Integer batteryId;
+    private Integer batteryId;
     @Column(name = "result_type_id", nullable = false)
-    private final Integer resultTypeId;
+    private Integer resultTypeId;
+
+    public RefurbRecordType() {
+        // Default constructor for Spring Data JPA
+        Timestamp.from(Instant.now());
+    }
 
     public RefurbRecordType(Integer refurbPlanId,
                             Integer refurbStnId,

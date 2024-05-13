@@ -35,6 +35,10 @@ public class RefurbStationType {
     @Column(name = "next_calibration_date", nullable = false)
     private Timestamp nextCalibrationDate;
 
+    public RefurbStationType() {
+        // Default constructor for Spring Data JPA
+    }
+
     public Integer getRefurbStnId() {
         return refurbStnId;
     }
