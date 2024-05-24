@@ -18,7 +18,7 @@ public interface TesterBacklogRepository extends JpaRepository<TesterBacklogType
 
     @Query("SELECT testerBacklogId, terminalLayoutId, testSchemeId, batteryId " +
             "FROM TesterBacklogType " +
-            "WHERE testerBacklogEndDate = NULL " +
+            "WHERE testerBacklogEndDate IS NULL " +
             "ORDER BY testerBacklogPriority ASC, testerBacklogId ASC ")
     List<Object[]> getPendingTesterBacklog();
 

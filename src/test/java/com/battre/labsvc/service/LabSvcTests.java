@@ -1,5 +1,6 @@
 package com.battre.labsvc.service;
 
+import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.model.LabPlanType;
 import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.repository.LabPlansRepository;
@@ -8,7 +9,6 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
-import com.battre.stubs.services.SpecSvcGrpc;
 import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,24 +33,28 @@ public class LabSvcTests {
     @Mock
     private TesterBacklogRepository testerBacklogRepo;
     @Mock
-    private SpecSvcGrpc.SpecSvcStub specSvcClient;
+    private GrpcMethodInvoker grpcMethodInvoker;
     private LabSvc labSvc;
     private AutoCloseable closeable;
 
-    public static void mockGetBatteryTerminalLayouts(SpecSvcGrpc.SpecSvcStub specSvcClient, GetBatteryTerminalLayoutsResponse response) {
+    public void mockGetBatteryTerminalLayouts(GetBatteryTerminalLayoutsResponse response) {
         doAnswer(invocation -> {
-            StreamObserver<GetBatteryTerminalLayoutsResponse> observer = invocation.getArgument(1);
+            StreamObserver<GetBatteryTerminalLayoutsResponse> observer = invocation.getArgument(3);
             observer.onNext(response);
             observer.onCompleted();
             return null;
-        }).when(specSvcClient).getBatteryTerminalLayouts(any(GetBatteryTerminalLayoutsRequest.class), any(StreamObserver.class));
+        }).when(grpcMethodInvoker).callMethod(
+                eq("specsvc"),
+                eq("getBatteryTerminalLayouts"),
+                any(GetBatteryTerminalLayoutsRequest.class),
+                any(StreamObserver.class)
+        );
     }
 
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        labSvc = new LabSvc(labPlansRepo, testerBacklogRepo);
-        labSvc.setSpecSvcClient(specSvcClient);
+        labSvc = new LabSvc(labPlansRepo, testerBacklogRepo, grpcMethodInvoker);
     }
 
     @AfterEach
@@ -94,7 +99,7 @@ public class LabSvcTests {
         );
         GetBatteryTerminalLayoutsResponse response =
                 GetBatteryTerminalLayoutsResponse.newBuilder().addAllBatteries(batteryTypeTerminalList).build();
-        mockGetBatteryTerminalLayouts(specSvcClient, response);
+        mockGetBatteryTerminalLayouts(response);
 
         boolean result = labSvc.addBatteriesToTesterBacklog(batteryIdsTypes);
         assertTrue(result);

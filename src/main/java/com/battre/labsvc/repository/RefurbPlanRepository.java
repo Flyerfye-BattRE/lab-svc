@@ -95,7 +95,7 @@ public interface RefurbPlanRepository extends JpaRepository<RefurbPlanType, Inte
             // needCapacitorSwap
             "CASE WHEN capacitorSwap = TRUE AND capacitorSwapRecordId IS NULL THEN TRUE ELSE FALSE END " +
             "FROM RefurbPlanType " +
-            "WHERE refurbPlanEndDate = NULL AND available = true " +
+            "WHERE refurbPlanEndDate IS NULL AND available = TRUE " +
             "ORDER BY refurbPlanPriority ASC, refurbPlanId ASC ")
     List<Object[]> getPendingRefurbPlans();
 

@@ -18,17 +18,17 @@ public class TesterRecordType {
     @Column(name = "tester_record_id")
     private Integer testerRecordId;
     @Column(name = "tester_stn_id", nullable = false)
-    private Integer testerStnId;
+    private final Integer testerStnId;
     @Column(name = "battery_id", nullable = false)
-    private Integer batteryId;
+    private final Integer batteryId;
     @Column(name = "test_scheme_id", nullable = false)
-    private Integer testSchemeId;
+    private final Integer testSchemeId;
     @Column(name = "refurb_scheme_id", nullable = false)
-    private Integer refurbSchemeId;
+    private final Integer refurbSchemeId;
     @Column(name = "result_type_id", nullable = false)
-    private Integer resultTypeId;
+    private final Integer resultTypeId;
     @Column(name = "test_date", nullable = false)
-    private Timestamp testDate;
+    private final Timestamp testDate;
 
     public TesterRecordType() {
         // Default constructor for Spring Data JPA

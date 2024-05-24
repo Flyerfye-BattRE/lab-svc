@@ -1,5 +1,6 @@
-package com.battre.labsvc.service;
+package com.battre.labsvc.controller;
 
+import com.battre.labsvc.service.LabSvc;
 import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.LabSvcGrpc;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
@@ -13,13 +14,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @GrpcService
-public class LabSvcImpl extends LabSvcGrpc.LabSvcImplBase {
-    private static final Logger logger = Logger.getLogger(LabSvcImpl.class.getName());
+public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
+    private static final Logger logger = Logger.getLogger(LabSvcController.class.getName());
 
     private final LabSvc labSvc;
 
     @Autowired
-    public LabSvcImpl(LabSvc labSvc) {
+    public LabSvcController(LabSvc labSvc) {
         this.labSvc = labSvc;
     }
 

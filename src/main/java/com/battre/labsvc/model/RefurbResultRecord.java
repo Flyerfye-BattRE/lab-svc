@@ -1,4 +1,4 @@
-package com.battre.labsvc.service;
+package com.battre.labsvc.model;
 
 import com.battre.labsvc.enums.RefurbStationClass;
 

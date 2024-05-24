@@ -1,5 +1,6 @@
 package com.battre.labsvc.service;
 
+import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.model.LabPlanType;
 import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.repository.LabPlansRepository;
@@ -8,9 +9,7 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
-import com.battre.stubs.services.SpecSvcGrpc;
 import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +29,14 @@ public class LabSvc {
     private final LabPlansRepository labPlansRepo;
 
     private final TesterBacklogRepository testerBacklogRepo;
+    private final GrpcMethodInvoker grpcMethodInvoker;
 
-    @GrpcClient("specSvc")
-    private SpecSvcGrpc.SpecSvcStub specSvcClient;
 
     @Autowired
-    LabSvc(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo) {
+    LabSvc(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo, GrpcMethodInvoker grpcMethodInvoker) {
         this.labPlansRepo = labPlansRepo;
         this.testerBacklogRepo = testerBacklogRepo;
-
-    }
-
-    // used for testing
-    public void setSpecSvcClient(SpecSvcGrpc.SpecSvcStub specSvcClient) {
-        this.specSvcClient = specSvcClient;
+        this.grpcMethodInvoker = grpcMethodInvoker;
     }
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
@@ -122,7 +115,12 @@ public class LabSvc {
             }
         };
 
-        specSvcClient.getBatteryTerminalLayouts(request, responseObserver);
+        grpcMethodInvoker.callMethod(
+                "specsvc",
+                "getBatteryTerminalLayouts",
+                request,
+                responseObserver
+        );
 
         Map<Integer, Integer> batteryTypeToTerminalIds = null;
 

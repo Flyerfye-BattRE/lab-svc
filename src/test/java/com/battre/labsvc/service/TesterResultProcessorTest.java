@@ -1,19 +1,19 @@
 package com.battre.labsvc.service;
 
+import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.model.RefurbPlanType;
 import com.battre.labsvc.model.RefurbSchemeType;
 import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.model.TesterRecordType;
+import com.battre.labsvc.model.TesterResultRecord;
 import com.battre.labsvc.repository.LabPlansRepository;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbSchemesRepository;
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterRecordsRepository;
-import com.battre.stubs.services.OpsSvcGrpc;
 import com.battre.stubs.services.RemoveBatteryRequest;
 import com.battre.stubs.services.RemoveBatteryResponse;
-import com.battre.stubs.services.StorageSvcGrpc;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -52,9 +51,7 @@ public class TesterResultProcessorTest {
     @Mock
     private BlockingQueue<TesterResultRecord> resultQueue;
     @Mock
-    private OpsSvcGrpc.OpsSvcStub opsSvcClient;
-    @Mock
-    private StorageSvcGrpc.StorageSvcStub storageSvcClient;
+    private GrpcMethodInvoker grpcMethodInvoker;
     @InjectMocks
     private TesterResultProcessor testerResultProcessor;
 
@@ -67,28 +64,37 @@ public class TesterResultProcessorTest {
                 testerBacklogRepo,
                 testerRecordsRepo,
                 refurbSchemesRepo,
+                grpcMethodInvoker,
                 resultQueue
         );
-        testerResultProcessor.setOpsSvcClient(opsSvcClient);
-        testerResultProcessor.setStorageSvcClient(storageSvcClient);
     }
 
-    public void mockUpdateBatteryStatus(OpsSvcGrpc.OpsSvcStub opsSvcClient, UpdateBatteryStatusResponse response) {
+    public void mockUpdateBatteryStatus(UpdateBatteryStatusResponse response) {
         doAnswer(invocation -> {
-            StreamObserver<UpdateBatteryStatusResponse> observer = invocation.getArgument(1);
+            StreamObserver<UpdateBatteryStatusResponse> observer = invocation.getArgument(3);
             observer.onNext(response);
             observer.onCompleted();
             return null;
-        }).when(opsSvcClient).updateBatteryStatus(any(UpdateBatteryStatusRequest.class), any(StreamObserver.class));
+        }).when(grpcMethodInvoker).callMethod(
+                eq("opssvc"),
+                eq("updateBatteryStatus"),
+                any(UpdateBatteryStatusRequest.class),
+                any(StreamObserver.class)
+        );
     }
 
-    public void mockUpdateStorageSvcRemoveBattery(StorageSvcGrpc.StorageSvcStub storageSvcClient, RemoveBatteryResponse response) {
+    public void mockUpdateStorageSvcRemoveBattery(RemoveBatteryResponse response) {
         doAnswer(invocation -> {
-            StreamObserver<RemoveBatteryResponse> observer = invocation.getArgument(1);
+            StreamObserver<RemoveBatteryResponse> observer = invocation.getArgument(3);
             observer.onNext(response);
             observer.onCompleted();
             return null;
-        }).when(storageSvcClient).removeBattery(any(RemoveBatteryRequest.class), any(StreamObserver.class));
+        }).when(grpcMethodInvoker).callMethod(
+                eq("storagesvc"),
+                eq("removeBattery"),
+                any(RemoveBatteryRequest.class),
+                any(StreamObserver.class)
+        );
     }
 
     @Test
@@ -139,7 +145,7 @@ public class TesterResultProcessorTest {
 
         UpdateBatteryStatusResponse response =
                 UpdateBatteryStatusResponse.newBuilder().build();
-        mockUpdateBatteryStatus(opsSvcClient, response);
+        mockUpdateBatteryStatus(response);
 
         testerResultProcessor.processTesterResults();
 
@@ -148,7 +154,9 @@ public class TesterResultProcessorTest {
 
         verify(refurbPlanRepo, times(1)).save(any(RefurbPlanType.class));
         verify(labPlansRepo, times(1)).setRefurbPlanForLabPlan(anyInt(), anyInt());
-        verify(opsSvcClient, times(1)).updateBatteryStatus(
+        verify(grpcMethodInvoker, times(1)).callMethod(
+                eq("opssvc"),
+                eq("updateBatteryStatus"),
                 any(UpdateBatteryStatusRequest.class),
                 any(StreamObserver.class)
         );
@@ -215,20 +223,24 @@ public class TesterResultProcessorTest {
 
         UpdateBatteryStatusResponse response =
                 UpdateBatteryStatusResponse.newBuilder().build();
-        mockUpdateBatteryStatus(opsSvcClient, response);
+        mockUpdateBatteryStatus(response);
 
         RemoveBatteryResponse storageSvcResponse =
                 RemoveBatteryResponse.newBuilder().build();
-        mockUpdateStorageSvcRemoveBattery(storageSvcClient, storageSvcResponse);
+        mockUpdateStorageSvcRemoveBattery(storageSvcResponse);
 
         testerResultProcessor.processTesterResults();
 
         verify(labPlansRepo, times(1)).endLabPlan(eq(4), any(Timestamp.class));
-        verify(opsSvcClient, times(1)).updateBatteryStatus(
+        verify(grpcMethodInvoker, times(1)).callMethod(
+                eq("opssvc"),
+                eq("updateBatteryStatus"),
                 any(UpdateBatteryStatusRequest.class),
                 any(StreamObserver.class)
         );
-        verify(storageSvcClient, times(1)).removeBattery(
+        verify(grpcMethodInvoker, times(1)).callMethod(
+                eq("storagesvc"),
+                eq("removeBattery"),
                 any(RemoveBatteryRequest.class),
                 any(StreamObserver.class)
         );

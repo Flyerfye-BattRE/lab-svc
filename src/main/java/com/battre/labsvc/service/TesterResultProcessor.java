@@ -1,10 +1,12 @@
 package com.battre.labsvc.service;
 
+import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.model.RefurbPlanType;
 import com.battre.labsvc.model.RefurbSchemeType;
 import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.model.TesterRecordType;
+import com.battre.labsvc.model.TesterResultRecord;
 import com.battre.labsvc.repository.LabPlansRepository;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbSchemesRepository;
@@ -12,14 +14,11 @@ import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterRecordsRepository;
 import com.battre.stubs.services.BatteryIdStatus;
 import com.battre.stubs.services.BatteryStatus;
-import com.battre.stubs.services.OpsSvcGrpc;
 import com.battre.stubs.services.RemoveBatteryRequest;
 import com.battre.stubs.services.RemoveBatteryResponse;
-import com.battre.stubs.services.StorageSvcGrpc;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,10 +43,7 @@ public class TesterResultProcessor implements Runnable {
     // Check every 5 seconds
     private final long checkInterval = 5000;
     private final Object lock = new Object();
-    @GrpcClient("opsSvc")
-    private OpsSvcGrpc.OpsSvcStub opsSvcClient;
-    @GrpcClient("storageSvc")
-    private StorageSvcGrpc.StorageSvcStub storageSvcClient;
+    private final GrpcMethodInvoker grpcMethodInvoker;
     private volatile boolean active = true;
 
     @Autowired
@@ -57,6 +53,7 @@ public class TesterResultProcessor implements Runnable {
             TesterBacklogRepository testerBacklogRepo,
             TesterRecordsRepository testerRecordsRepo,
             RefurbSchemesRepository refurbSchemesRepo,
+            GrpcMethodInvoker grpcMethodInvoker,
             BlockingQueue<TesterResultRecord> resultQueue) {
         this.labPlansRepo = labPlansRepo;
         this.refurbPlanRepo = refurbPlanRepo;
@@ -64,16 +61,7 @@ public class TesterResultProcessor implements Runnable {
         this.testerBacklogRepo = testerBacklogRepo;
         this.refurbSchemesRepo = refurbSchemesRepo;
         this.resultQueue = resultQueue;
-
-    }
-
-    // used for testing
-    public void setOpsSvcClient(OpsSvcGrpc.OpsSvcStub opsSvcClient) {
-        this.opsSvcClient = opsSvcClient;
-    }
-
-    public void setStorageSvcClient(StorageSvcGrpc.StorageSvcStub storageSvcClient) {
-        this.storageSvcClient = storageSvcClient;
+        this.grpcMethodInvoker = grpcMethodInvoker;
     }
 
     @Override
@@ -186,7 +174,7 @@ public class TesterResultProcessor implements Runnable {
                 .setBatteryStatus(status)
                 .build();
         UpdateBatteryStatusRequest request =
-                UpdateBatteryStatusRequest.newBuilder().setBatteries(batteryIdStatus).build();
+                UpdateBatteryStatusRequest.newBuilder().setBattery(batteryIdStatus).build();
 
         CompletableFuture<UpdateBatteryStatusResponse> responseFuture = new CompletableFuture<>();
         StreamObserver<UpdateBatteryStatusResponse> responseObserver = new StreamObserver<>() {
@@ -207,7 +195,12 @@ public class TesterResultProcessor implements Runnable {
             }
         };
 
-        opsSvcClient.updateBatteryStatus(request, responseObserver);
+        grpcMethodInvoker.callMethod(
+                "opssvc",
+                "updateBatteryStatus",
+                request,
+                responseObserver
+        );
 
         boolean result = false;
         // Wait for the response or 1 sec handle timeout
@@ -245,7 +238,12 @@ public class TesterResultProcessor implements Runnable {
             }
         };
 
-        storageSvcClient.removeBattery(request, responseObserver);
+        grpcMethodInvoker.callMethod(
+                "storagesvc",
+                "removeBattery",
+                request,
+                responseObserver
+        );
 
         boolean result = false;
         // Wait for the response or 1 sec handle timeout

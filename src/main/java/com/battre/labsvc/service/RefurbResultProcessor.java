@@ -1,22 +1,21 @@
 package com.battre.labsvc.service;
 
+import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.RefurbRecordType;
+import com.battre.labsvc.model.RefurbResultRecord;
 import com.battre.labsvc.repository.LabPlansRepository;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbRecordsRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
 import com.battre.stubs.services.BatteryIdStatus;
 import com.battre.stubs.services.BatteryStatus;
-import com.battre.stubs.services.OpsSvcGrpc;
 import com.battre.stubs.services.RemoveBatteryRequest;
 import com.battre.stubs.services.RemoveBatteryResponse;
-import com.battre.stubs.services.StorageSvcGrpc;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,10 +38,7 @@ public class RefurbResultProcessor implements Runnable {
     // Check every 5 seconds
     private final long checkInterval = 5000;
     private final Object lock = new Object();
-    @GrpcClient("opsSvc")
-    private OpsSvcGrpc.OpsSvcStub opsSvcClient;
-    @GrpcClient("storageSvc")
-    private StorageSvcGrpc.StorageSvcStub storageSvcClient;
+    private final GrpcMethodInvoker grpcMethodInvoker;
     private volatile boolean active = true;
 
     @Autowired
@@ -51,24 +47,15 @@ public class RefurbResultProcessor implements Runnable {
             RefurbPlanRepository refurbPlanRepo,
             RefurbStationRepository refurbStationsRepo,
             RefurbRecordsRepository refurbRecordsRepo,
+            GrpcMethodInvoker grpcMethodInvoker,
             BlockingQueue<RefurbResultRecord> resultQueue) {
         this.labPlansRepo = labPlansRepo;
         this.refurbPlanRepo = refurbPlanRepo;
         this.refurbStationsRepo = refurbStationsRepo;
         this.refurbRecordsRepo = refurbRecordsRepo;
         this.resultQueue = resultQueue;
-
+        this.grpcMethodInvoker = grpcMethodInvoker;
     }
-
-    // used for testing
-    public void setOpsSvcClient(OpsSvcGrpc.OpsSvcStub opsSvcClient) {
-        this.opsSvcClient = opsSvcClient;
-    }
-
-    public void setStorageSvcClient(StorageSvcGrpc.StorageSvcStub storageSvcClient) {
-        this.storageSvcClient = storageSvcClient;
-    }
-
 
     @Override
     public void run() {
@@ -203,7 +190,7 @@ public class RefurbResultProcessor implements Runnable {
                 .setBatteryStatus(status)
                 .build();
         UpdateBatteryStatusRequest request =
-                UpdateBatteryStatusRequest.newBuilder().setBatteries(batteryIdStatus).build();
+                UpdateBatteryStatusRequest.newBuilder().setBattery(batteryIdStatus).build();
 
         CompletableFuture<UpdateBatteryStatusResponse> responseFuture = new CompletableFuture<>();
         StreamObserver<UpdateBatteryStatusResponse> responseObserver = new StreamObserver<>() {
@@ -224,7 +211,12 @@ public class RefurbResultProcessor implements Runnable {
             }
         };
 
-        opsSvcClient.updateBatteryStatus(request, responseObserver);
+        grpcMethodInvoker.callMethod(
+                "opssvc",
+                "updateBatteryStatus",
+                request,
+                responseObserver
+        );
 
         boolean result = false;
         // Wait for the response or 1 sec handle timeout
@@ -263,7 +255,12 @@ public class RefurbResultProcessor implements Runnable {
             }
         };
 
-        storageSvcClient.removeBattery(request, responseObserver);
+        grpcMethodInvoker.callMethod(
+                "storagesvc",
+                "removeBattery",
+                request,
+                responseObserver
+        );
 
         boolean result = false;
         // Wait for the response or 1 sec handle timeout

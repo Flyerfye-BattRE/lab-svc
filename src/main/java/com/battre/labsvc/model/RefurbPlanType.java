@@ -18,19 +18,19 @@ public class RefurbPlanType {
     @Column(name = "refurb_plan_id")
     private Integer refurbPlanId;
     @Column(name = "battery_id", nullable = false)
-    private Integer batteryId;
+    private final Integer batteryId;
 
     @Column(name = "refurb_plan_priority", nullable = false)
-    private Integer refurbPlanPriority;
+    private final Integer refurbPlanPriority;
 
     @Column(name = "refurb_plan_start_date", nullable = false)
-    private Timestamp refurbPlanStartDate;
+    private final Timestamp refurbPlanStartDate;
 
     @Column(name = "refurb_plan_end_date")
     private Timestamp refurbPlanEndDate;
 
     @Column(name = "available")
-    private Boolean available = true;
+    private final Boolean available = true;
 
     @Column(name = "resolder")
     private Boolean resolder = false;
@@ -77,13 +77,13 @@ public class RefurbPlanType {
         this.capacitorSwap = capacitorSwap;
     }
 
+    public Integer getRefurbPlanId() {
+        return refurbPlanId;
+    }
+
     // added for testing purposes
     public void setRefurbPlanId(Integer refurbPlanId) {
         this.refurbPlanId = refurbPlanId;
-    }
-
-    public Integer getRefurbPlanId() {
-        return refurbPlanId;
     }
 
     public Integer getBatteryId() {

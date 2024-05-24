@@ -1,5 +1,6 @@
-package com.battre.labsvc.service;
+package com.battre.labsvc.config;
 
+import com.battre.labsvc.model.TesterResultRecord;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

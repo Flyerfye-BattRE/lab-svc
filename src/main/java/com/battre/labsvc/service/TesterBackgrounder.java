@@ -1,5 +1,6 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.model.TesterResultRecord;
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterStationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

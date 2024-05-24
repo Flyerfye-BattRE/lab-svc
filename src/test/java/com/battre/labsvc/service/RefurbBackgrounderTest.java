@@ -1,5 +1,6 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.model.RefurbResultRecord;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
 import org.junit.jupiter.api.Test;

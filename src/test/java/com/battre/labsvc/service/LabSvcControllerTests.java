@@ -1,5 +1,6 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.controller.LabSvcController;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
 import com.battre.stubs.services.ProcessLabBatteriesResponse;
 import io.grpc.stub.StreamObserver;
@@ -15,21 +16,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class LabSvcImplTests {
+public class LabSvcControllerTests {
     @Mock
     private LabSvc labSvc;
 
     @Mock
     private StreamObserver<ProcessLabBatteriesResponse> responseProcessLabBatteriesResponse;
 
-    private LabSvcImpl labSvcImpl;
+    private LabSvcController labSvcController;
 
     private AutoCloseable closeable;
 
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        labSvcImpl = new LabSvcImpl(labSvc);
+        labSvcController = new LabSvcController(labSvc);
     }
 
     @AfterEach
@@ -39,13 +40,13 @@ public class LabSvcImplTests {
 
     @Test
     void testProcessLabBatteriesSuccess() {
-        labSvcImpl = new LabSvcImpl(labSvc);
+        labSvcController = new LabSvcController(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(true);
         when(labSvc.addBatteriesToTesterBacklog(any(List.class))).thenReturn(true);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
-        labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
+        labSvcController.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
         verify(labSvc).addBatteriesToLabPlans(any(List.class));
         verify(labSvc).addBatteriesToTesterBacklog(any(List.class));
@@ -55,12 +56,12 @@ public class LabSvcImplTests {
 
     @Test
     void testProcessLabBatteriesAddBatteriesToLabPlansFail() {
-        labSvcImpl = new LabSvcImpl(labSvc);
+        labSvcController = new LabSvcController(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(false);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
-        labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
+        labSvcController.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
         verify(labSvc).addBatteriesToLabPlans(any(List.class));
         verify(responseProcessLabBatteriesResponse).onNext(ProcessLabBatteriesResponse.newBuilder().setSuccess(false).build());
@@ -69,13 +70,13 @@ public class LabSvcImplTests {
 
     @Test
     void testProcessLabBatteriesAddBatteriesToTesterBacklogFail() {
-        labSvcImpl = new LabSvcImpl(labSvc);
+        labSvcController = new LabSvcController(labSvc);
 
         when(labSvc.addBatteriesToLabPlans(any(List.class))).thenReturn(true);
         when(labSvc.addBatteriesToTesterBacklog(any(List.class))).thenReturn(false);
         ProcessLabBatteriesRequest request = ProcessLabBatteriesRequest.newBuilder().build();
 
-        labSvcImpl.processLabBatteries(request, responseProcessLabBatteriesResponse);
+        labSvcController.processLabBatteries(request, responseProcessLabBatteriesResponse);
 
         verify(labSvc).addBatteriesToLabPlans(any(List.class));
         verify(labSvc).addBatteriesToTesterBacklog(any(List.class));

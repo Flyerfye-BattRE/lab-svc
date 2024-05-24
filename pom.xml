@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.2.5</version>
+        <relativePath/> 
     </parent>
     <groupId>com.battre</groupId>
     <artifactId>lab-svc</artifactId>
@@ -15,6 +15,7 @@
     <description>Lab service for BattRe app</description>
     <properties>
         <java.version>17</java.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -26,10 +27,15 @@
         <dependency>
             <groupId>com.battre</groupId>
             <artifactId>grpc-ifc</artifactId>
-            <version>v0.1.4</version>
-            <!-- comment these out to make things work for github-->
-            <!--			<scope>system</scope>-->
-            <!--			<systemPath>X</systemPath>-->
+            <version>v0.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -78,12 +84,6 @@
             <artifactId>spring-core</artifactId>
             <version>6.1.3</version>
         </dependency>
-        <!-- Addresses CVE-2023-34055-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>3.1.6</version>
-        </dependency>
         <!-- Addresses CVE-2023-51074-->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -91,6 +91,18 @@
             <version>2.9.0</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>
