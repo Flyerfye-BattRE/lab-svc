@@ -23,6 +23,11 @@ public interface RefurbStationRepository extends JpaRepository<RefurbStationType
             "ORDER BY rst.lastActiveDate ASC")
     List<Object[]> getAvailableRefurbStns();
 
+    @Query("SELECT rst " +
+            "FROM RefurbStationType AS rst " +
+            "ORDER BY refurbStnId ")
+    List<RefurbStationType> getRefurbStationLogs();
+
     @Transactional
     @Modifying
     @Query("UPDATE RefurbStationType " +

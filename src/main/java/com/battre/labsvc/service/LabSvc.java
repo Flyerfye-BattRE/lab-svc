@@ -1,10 +1,19 @@
 package com.battre.labsvc.service;
 
 import com.battre.grpcifc.GrpcMethodInvoker;
+import com.battre.labsvc.enums.LabPlanStatusEnum;
 import com.battre.labsvc.model.LabPlanType;
+import com.battre.labsvc.model.RefurbPlanType;
+import com.battre.labsvc.model.RefurbResultRecord;
+import com.battre.labsvc.model.RefurbStationType;
 import com.battre.labsvc.model.TesterBacklogType;
+import com.battre.labsvc.model.TesterResultRecord;
+import com.battre.labsvc.model.TesterStationType;
 import com.battre.labsvc.repository.LabPlansRepository;
+import com.battre.labsvc.repository.RefurbPlanRepository;
+import com.battre.labsvc.repository.RefurbStationRepository;
 import com.battre.labsvc.repository.TesterBacklogRepository;
+import com.battre.labsvc.repository.TesterStationRepository;
 import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
@@ -13,10 +22,15 @@ import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -29,14 +43,33 @@ public class LabSvc {
     private final LabPlansRepository labPlansRepo;
 
     private final TesterBacklogRepository testerBacklogRepo;
+    private final TesterStationRepository testerStnRepo;
+    private final RefurbPlanRepository refurbPlanRepo;
+    private final RefurbStationRepository refurbStnRepo;
     private final GrpcMethodInvoker grpcMethodInvoker;
+    private final BlockingQueue<TesterResultRecord> testResultQueue;
+    private final BlockingQueue<RefurbResultRecord> refurbResultQueue;
 
 
     @Autowired
-    LabSvc(LabPlansRepository labPlansRepo, TesterBacklogRepository testerBacklogRepo, GrpcMethodInvoker grpcMethodInvoker) {
+    LabSvc(
+            LabPlansRepository labPlansRepo,
+            TesterBacklogRepository testerBacklogRepo,
+            TesterStationRepository testerStnRepo,
+            RefurbPlanRepository refurbPlanRepo,
+            RefurbStationRepository refurbStnRepo,
+            GrpcMethodInvoker grpcMethodInvoker,
+            BlockingQueue<TesterResultRecord> testResultQueue,
+            BlockingQueue<RefurbResultRecord> refurbResultQueue
+    ) {
         this.labPlansRepo = labPlansRepo;
         this.testerBacklogRepo = testerBacklogRepo;
+        this.testerStnRepo = testerStnRepo;
+        this.refurbPlanRepo = refurbPlanRepo;
+        this.refurbStnRepo = refurbStnRepo;
         this.grpcMethodInvoker = grpcMethodInvoker;
+        this.testResultQueue = testResultQueue;
+        this.refurbResultQueue = refurbResultQueue;
     }
 
     public boolean addBatteriesToLabPlans(List<BatteryIdType> batteryIdsTypes) {
@@ -85,6 +118,147 @@ public class LabSvc {
         return true;
     }
 
+    public List<LabPlanType> getCurrentLabPlans() {
+        return labPlansRepo.getCurrentLabPlans();
+    }
+
+    public List<LabPlanType> getLabPlans() {
+        return labPlansRepo.getLabPlans();
+    }
+
+    public boolean changeBatteryTesterPriority(int batteryId, int priority) {
+        testerBacklogRepo.setBatteryTesterPriority(batteryId, priority);
+
+        return true;
+    }
+
+    public List<TesterBacklogType> getCurrentTesterBacklog() {
+        return testerBacklogRepo.getCurrentTesterBacklog();
+    }
+
+    public List<TesterBacklogType> getTesterBacklog() {
+        return testerBacklogRepo.getTesterBacklog();
+    }
+
+    public boolean changeBatteryRefurbPriority(int batteryId, int priority) {
+        refurbPlanRepo.setBatteryRefurbPriority(batteryId, priority);
+
+        return true;
+    }
+
+    public List<RefurbPlanType> getCurrentRefurbPlans() {
+        return refurbPlanRepo.getCurrentRefurbPlans();
+    }
+
+    public List<RefurbPlanType> getRefurbPlans() {
+        return refurbPlanRepo.getRefurbPlans();
+    }
+
+    public List<TesterStationType> getTesterStationLogs() {
+        return testerStnRepo.getTesterStationLogs();
+    }
+
+    public List<RefurbStationType> getRefurbStationLogs() {
+        return refurbStnRepo.getRefurbStationLogs();
+    }
+
+    public boolean removeBattery(int batteryId) {
+        /*
+            A battery could be in:
+                TesterBacklog
+                    Set testerBacklogEndDate
+                TesterResultQueue
+                    Delete entry
+                RefurbBacklog
+                    Set refurb plan end date
+                    Set available = false
+                RefurbResultQueue
+                    Delete entry
+
+            End lab plan
+            Find whichever list it is in, remove the entry from that list
+         */
+
+        int labPlanId = labPlansRepo.findByBatteryId(batteryId).getLabPlanId();
+        labPlansRepo.endLabPlan(labPlanId, Timestamp.from(Instant.now()));
+        labPlansRepo.setPlanStatusesForPlanId(labPlanId, LabPlanStatusEnum.DESTROYED.toString());
+        boolean labPlanStatus = labPlansRepo.getLabPlanIdsForBatteryId(batteryId).isEmpty();
+
+        boolean testBacklogStatus = removeTesterBacklogEntryWithBatteryId(batteryId);
+        boolean testResultsStatus = removeTesterResultsWithBatteryId(batteryId);
+        boolean refurbBacklogStatus = removeRefurbBacklogEntryWithBatteryId(batteryId);
+        boolean refurbResultsStatus = removeRefurbResultsWithBatteryId(batteryId);
+
+        // The relevant lab plans should be ended and at least one of the 4 places where results are
+        return labPlanStatus && (testBacklogStatus || testResultsStatus || refurbBacklogStatus || refurbResultsStatus);
+    }
+
+    private boolean removeTesterBacklogEntryWithBatteryId(int batteryId) {
+        Optional<Integer> testerBacklogEntry = testerBacklogRepo.getCurrentTesterBacklogForBatteryId(batteryId);
+        if (testerBacklogEntry.isPresent()) {
+            testerBacklogRepo.endTesterBacklogEntry(
+                    testerBacklogEntry.get(),
+                    Timestamp.from(Instant.now())
+            );
+
+            // while this may look the same as the case where the batteryId isn't detected in the list,
+            // this case is only hit when the repo operation fails which will result in a thrown exception
+            return testerBacklogRepo.getCurrentTesterBacklogForBatteryId(batteryId).isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    private boolean removeRefurbBacklogEntryWithBatteryId(int batteryId) {
+        Optional<Integer> refurbPlanEntry = refurbPlanRepo.getPendingRefurbPlanForBatteryId(batteryId);
+        if (refurbPlanEntry.isPresent()) {
+            refurbPlanRepo.endRefurbPlanEntry(
+                    refurbPlanEntry.get(),
+                    Timestamp.from(Instant.now())
+            );
+
+            // while this may look the same as the case where the batteryId isn't detected in the list,
+            // this case is only hit when the repo operation fails which will result in a thrown exception
+            return refurbPlanRepo.getPendingRefurbPlanForBatteryId(batteryId).isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    private boolean removeTesterResultsWithBatteryId(int batteryId) {
+        boolean success = false;
+        synchronized (testResultQueue) {
+            Iterator<TesterResultRecord> iterator = testResultQueue.iterator();
+            while (iterator.hasNext()) {
+                TesterResultRecord record = iterator.next();
+                if (record.batteryId() == batteryId) {
+                    iterator.remove();
+                    logger.info("Battery " + batteryId + " successfully removed from tester results queue.");
+                    success = true;
+                }
+            }
+        }
+
+        return success;
+    }
+
+    private boolean removeRefurbResultsWithBatteryId(int batteryId) {
+        boolean success = false;
+        synchronized (refurbResultQueue) {
+            Iterator<RefurbResultRecord> iterator = refurbResultQueue.iterator();
+            while (iterator.hasNext()) {
+                RefurbResultRecord record = iterator.next();
+                if (record.batteryId() == batteryId) {
+                    iterator.remove();
+                    logger.info("Battery " + batteryId + " successfully removed from refurb results queue.");
+                    success = true;
+                }
+            }
+        }
+
+        return success;
+    }
+
     private Map<Integer, Integer> getBatteryTerminalIdMap(List<Integer> batteryTypeIds) {
         GetBatteryTerminalLayoutsRequest request = GetBatteryTerminalLayoutsRequest
                 .newBuilder()
@@ -106,6 +280,7 @@ public class LabSvc {
             public void onError(Throwable t) {
                 // Handle any errors
                 logger.severe("getBatteryTerminalLayouts() errored: " + t.getMessage());
+                responseFuture.completeExceptionally(t);
             }
 
             @Override

@@ -26,17 +26,19 @@ public class TesterStationRepositoryTest {
     @Test
     @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
     public void testGetAvailableTesterStations() {
-        List<Object[]> availStns = testerStationRepo.getAvailableTesterStations();
+        List<TesterStationType> availStns = testerStationRepo.getAvailableTesterStations();
 
         // Verify the result
         // confirm tester stations returned
         assertNotNull(availStns);
         assertEquals(1, availStns.size());
-        // returned fields are: testerStnId, terminalLayoutId
-        int testerStnId = (Integer) availStns.get(0)[0];
-        int terminalLayoutId = (Integer) availStns.get(0)[1];
-        assertEquals(2, testerStnId);
-        assertEquals(6, terminalLayoutId);
+        assertEquals(2, availStns.get(0).getTesterStnId());
+        assertEquals(6, availStns.get(0).getTerminalLayoutId());
+    }
+
+    @Test
+    public void testGetTesterStationLogs() {
+        // TODO: Implement test
     }
 
     @Test

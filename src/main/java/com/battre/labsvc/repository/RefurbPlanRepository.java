@@ -10,11 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RefurbPlanRepository extends JpaRepository<RefurbPlanType, Integer> {
     // Leverages JPA built in query func
     RefurbPlanType findByRefurbPlanId(int refurbPlanId);
+
+    @Query("SELECT refurbPlanId " +
+            "FROM RefurbPlanType " +
+            "WHERE batteryId = :batteryId AND refurbPlanEndDate IS NULL " +
+            "ORDER BY refurbPlanId ASC " +
+            "LIMIT 1 ")
+    Optional<Integer> getPendingRefurbPlanForBatteryId(@Param("batteryId") int batteryId);
 
     @Transactional
     @Modifying
@@ -52,6 +60,14 @@ public interface RefurbPlanRepository extends JpaRepository<RefurbPlanType, Inte
             "WHERE refurbPlanId = :refurbPlanId")
     void endRefurbPlanEntry(@Param("refurbPlanId") int refurbPlanId,
                             @Param("refurbPlanEndDate") Timestamp refurbPlanEndDate);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE RefurbPlanType " +
+            "SET refurbPlanPriority = :refurbPlanPriority " +
+            "WHERE batteryId = :batteryId")
+    void setBatteryRefurbPriority(@Param("batteryId") int batteryId,
+                                  @Param("refurbPlanPriority") int refurbPlanPriority);
 
     @Transactional
     @Modifying
@@ -97,6 +113,17 @@ public interface RefurbPlanRepository extends JpaRepository<RefurbPlanType, Inte
             "FROM RefurbPlanType " +
             "WHERE refurbPlanEndDate IS NULL AND available = TRUE " +
             "ORDER BY refurbPlanPriority ASC, refurbPlanId ASC ")
-    List<Object[]> getPendingRefurbPlans();
+    List<Object[]> getCurrentRefurbSchemeStatuses();
 
+    @Query("SELECT rpt " +
+            "FROM RefurbPlanType AS rpt " +
+            "WHERE refurbPlanEndDate IS NULL " +
+            "ORDER BY refurbPlanPriority ASC, refurbPlanId ASC ")
+    List<RefurbPlanType> getCurrentRefurbPlans();
+
+    @Query("SELECT rpt " +
+            "FROM RefurbPlanType AS rpt " +
+            "ORDER BY refurbPlanPriority ASC, refurbPlanId ASC " +
+            "LIMIT 1000")
+    List<RefurbPlanType> getRefurbPlans();
 }

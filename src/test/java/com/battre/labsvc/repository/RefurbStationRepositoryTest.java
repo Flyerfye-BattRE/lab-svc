@@ -42,6 +42,11 @@ public class RefurbStationRepositoryTest {
     }
 
     @Test
+    public void testGetRefurbStationLogs() {
+        // TODO: Implement test
+    }
+
+    @Test
     @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
     public void testMarkRefurbStnInUse() {
         Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");

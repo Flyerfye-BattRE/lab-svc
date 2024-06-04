@@ -1,6 +1,7 @@
 package com.battre.labsvc.service;
 
 import com.battre.grpcifc.GrpcMethodInvoker;
+import com.battre.labsvc.enums.LabPlanStatusEnum;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.RefurbRecordType;
@@ -11,8 +12,8 @@ import com.battre.labsvc.repository.RefurbRecordsRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
 import com.battre.stubs.services.BatteryIdStatus;
 import com.battre.stubs.services.BatteryStatus;
-import com.battre.stubs.services.RemoveBatteryRequest;
-import com.battre.stubs.services.RemoveBatteryResponse;
+import com.battre.stubs.services.RemoveStorageBatteryRequest;
+import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
@@ -158,20 +159,25 @@ public class RefurbResultProcessor implements Runnable {
                 logger.info("Refurb Plan [" + rrr.refurbPlanId() + "] COMPLETED for Battery [" + rrr.batteryId() + "]");
 
                 labPlansRepo.endLabPlanEntryForRefurbPlan(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
+                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.PASS.toString());
                 refurbPlanRepo.endRefurbPlanEntry(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
                 // Call OpsSvc to update battery status to Storage once refurb is done
                 updateOpsSvcBatteryStatus(rrr.batteryId(), BatteryStatus.STORAGE);
+            } else {
+                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_CONT.toString());
             }
         } else if (rrr.resultTypeId() == LabResult.FAIL_RETRY.getStatusCode()) {
             // Fail-Retry
             logger.info("Battery [" + rrr.batteryId() + "] FAILS > Retry refurb");
 
             refurbPlanRepo.markRefurbPlanAvail(rrr.refurbPlanId());
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_RETRY.toString());
         } else if (rrr.resultTypeId() == LabResult.FAIL_REJECT.getStatusCode()) {
             // Fail-Reject
             logger.info("Battery [" + rrr.batteryId() + "] FAILS > Rejected");
             // Update lab plan with end date
             labPlansRepo.endLabPlan(labPlans.get(0), Timestamp.from(Instant.now()));
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_REJECTED.toString());
             refurbPlanRepo.endRefurbPlanEntry(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
 
             // Call OpsSvc to update battery status to rejected
@@ -203,6 +209,7 @@ public class RefurbResultProcessor implements Runnable {
             public void onError(Throwable t) {
                 // Handle any errors
                 logger.severe("updateOpsSvcBatteryStatus() errored: " + t.getMessage());
+                responseFuture.completeExceptionally(t);
             }
 
             @Override
@@ -232,13 +239,13 @@ public class RefurbResultProcessor implements Runnable {
     }
 
     private boolean updateStorageSvcRemoveBattery(int batteryId) {
-        RemoveBatteryRequest request =
-                RemoveBatteryRequest.newBuilder().setBatteryId(batteryId).build();
+        RemoveStorageBatteryRequest request =
+                RemoveStorageBatteryRequest.newBuilder().setBatteryId(batteryId).build();
 
-        CompletableFuture<RemoveBatteryResponse> responseFuture = new CompletableFuture<>();
-        StreamObserver<RemoveBatteryResponse> responseObserver = new StreamObserver<>() {
+        CompletableFuture<RemoveStorageBatteryResponse> responseFuture = new CompletableFuture<>();
+        StreamObserver<RemoveStorageBatteryResponse> responseObserver = new StreamObserver<>() {
             @Override
-            public void onNext(RemoveBatteryResponse response) {
+            public void onNext(RemoveStorageBatteryResponse response) {
                 responseFuture.complete(response);
             }
 
@@ -246,6 +253,7 @@ public class RefurbResultProcessor implements Runnable {
             public void onError(Throwable t) {
                 // Handle any errors
                 logger.severe("updateStorageSvcRemoveBattery() errored: " + t.getMessage());
+                responseFuture.completeExceptionally(t);
             }
 
 
@@ -257,7 +265,7 @@ public class RefurbResultProcessor implements Runnable {
 
         grpcMethodInvoker.callMethod(
                 "storagesvc",
-                "removeBattery",
+                "removeStorageBattery",
                 request,
                 responseObserver
         );

@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbStations (
   last_active_date TIMESTAMP,
   last_calibration_date TIMESTAMP NOT NULL,
   next_calibration_date TIMESTAMP NOT NULL,
-  CONSTRAINT rs_refurb_station_class_id FOREIGN KEY (refurb_station_class_id) REFERENCES LabSvcSchema.RefurbStationClasses(refurb_station_class_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT rs_refurb_station_class_id_fk FOREIGN KEY (refurb_station_class_id) REFERENCES RefurbStationClasses(refurb_station_class_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbPlans (
@@ -86,9 +86,9 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.RefurbRecords (
   refurb_plan_id INT NOT NULL,
   result_type_id INT NOT NULL,
   refurb_date TIMESTAMP NOT NULL,
-  CONSTRAINT rr_refurb_plan_id FOREIGN KEY (refurb_plan_id) REFERENCES LabSvcSchema.RefurbPlans(refurb_plan_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT rr_refurb_stn_id FOREIGN KEY (refurb_stn_id) REFERENCES LabSvcSchema.RefurbStations(refurb_stn_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT rr_result_type_id FOREIGN KEY (result_type_id) REFERENCES LabSvcSchema.ResultTypes(result_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT rr_refurb_plan_id_fk FOREIGN KEY (refurb_plan_id) REFERENCES RefurbPlans(refurb_plan_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT rr_refurb_stn_id_fk FOREIGN KEY (refurb_stn_id) REFERENCES RefurbStations(refurb_stn_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT rr_result_type_id_fk FOREIGN KEY (result_type_id) REFERENCES ResultTypes(result_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.TesterRecords (
@@ -99,17 +99,26 @@ CREATE TABLE IF NOT EXISTS LabSvcSchema.TesterRecords (
   refurb_scheme_id INT NOT NULL,
   result_type_id INT NOT NULL,
   test_date TIMESTAMP NOT NULL,
-  CONSTRAINT tr_tester_stn_id FOREIGN KEY (tester_stn_id) REFERENCES LabSvcSchema.TesterStations(tester_stn_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT tr_test_scheme_id FOREIGN KEY (test_scheme_id) REFERENCES LabSvcSchema.TestSchemes(test_scheme_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT tr_refurb_scheme_id FOREIGN KEY (refurb_scheme_id) REFERENCES LabSvcSchema.RefurbSchemes(refurb_scheme_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT tr_result_type_id FOREIGN KEY (result_type_id) REFERENCES LabSvcSchema.ResultTypes(result_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT tr_tester_stn_id_fk FOREIGN KEY (tester_stn_id) REFERENCES TesterStations(tester_stn_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT tr_test_scheme_id_fk FOREIGN KEY (test_scheme_id) REFERENCES TestSchemes(test_scheme_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT tr_refurb_scheme_id_fk FOREIGN KEY (refurb_scheme_id) REFERENCES RefurbSchemes(refurb_scheme_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT tr_result_type_id_fk FOREIGN KEY (result_type_id) REFERENCES ResultTypes(result_type_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS LabSvcSchema.LabPlanStatus (
+  lab_plan_status_id SERIAL PRIMARY KEY,
+  status VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS LabSvcSchema.LabPlans (
   lab_plan_id SERIAL PRIMARY KEY,
+  lab_plan_status_id INT NOT NULL,
   lab_plan_start_date TIMESTAMP NOT NULL,
   lab_plan_end_date TIMESTAMP,
   battery_id INT NOT NULL,
   tester_record_id INT,
-  refurb_plan_id INT
+  refurb_plan_id INT,
+  CONSTRAINT lab_plan_status_id_fk FOREIGN KEY (lab_plan_status_id) REFERENCES LabPlanStatus(lab_plan_status_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT tester_record_id_fk FOREIGN KEY (tester_record_id) REFERENCES TesterRecords(tester_record_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT refurb_plan_id_fk FOREIGN KEY (refurb_plan_id) REFERENCES RefurbPlans(refurb_plan_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );

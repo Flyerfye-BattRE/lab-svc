@@ -52,12 +52,24 @@ public class TesterBacklogType {
         return testerBacklogId;
     }
 
+    public void setTesterBacklogId(Integer testerBacklogId) {
+        this.testerBacklogId = testerBacklogId;
+    }
+
     public Integer getTerminalLayoutId() {
         return terminalLayoutId;
     }
 
     public void setTerminalLayoutId(Integer terminalLayoutId) {
         this.terminalLayoutId = terminalLayoutId;
+    }
+
+    public Integer getTestSchemeId() {
+        return testSchemeId;
+    }
+
+    public void setTestSchemeId(Integer testSchemeId) {
+        this.testSchemeId = testSchemeId;
     }
 
     public Integer getBatteryId() {

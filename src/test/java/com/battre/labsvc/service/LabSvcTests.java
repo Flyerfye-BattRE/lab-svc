@@ -2,9 +2,14 @@ package com.battre.labsvc.service;
 
 import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.model.LabPlanType;
+import com.battre.labsvc.model.RefurbResultRecord;
 import com.battre.labsvc.model.TesterBacklogType;
+import com.battre.labsvc.model.TesterResultRecord;
 import com.battre.labsvc.repository.LabPlansRepository;
+import com.battre.labsvc.repository.RefurbPlanRepository;
+import com.battre.labsvc.repository.RefurbStationRepository;
 import com.battre.labsvc.repository.TesterBacklogRepository;
+import com.battre.labsvc.repository.TesterStationRepository;
 import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
@@ -18,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +39,17 @@ public class LabSvcTests {
     @Mock
     private TesterBacklogRepository testerBacklogRepo;
     @Mock
+    private TesterStationRepository testerStnRepo;
+    @Mock
+    private RefurbPlanRepository refurbPlanRepo;
+    @Mock
+    private RefurbStationRepository refurbStnRepo;
+    @Mock
     private GrpcMethodInvoker grpcMethodInvoker;
+    @Mock
+    private BlockingQueue<TesterResultRecord> testResultQueue;
+    @Mock
+    private BlockingQueue<RefurbResultRecord> refurbResultQueue;
     private LabSvc labSvc;
     private AutoCloseable closeable;
 
@@ -54,7 +70,16 @@ public class LabSvcTests {
     @BeforeEach
     public void openMocks() {
         closeable = MockitoAnnotations.openMocks(this);
-        labSvc = new LabSvc(labPlansRepo, testerBacklogRepo, grpcMethodInvoker);
+        labSvc = new LabSvc(
+                labPlansRepo,
+                testerBacklogRepo,
+                testerStnRepo,
+                refurbPlanRepo,
+                refurbStnRepo,
+                grpcMethodInvoker,
+                testResultQueue,
+                refurbResultQueue
+        );
     }
 
     @AfterEach
@@ -116,5 +141,60 @@ public class LabSvcTests {
         assertEquals(5, capturedVals.get(2).getTerminalLayoutId());
         assertEquals(7, capturedVals.get(3).getBatteryId());
         assertEquals(2, capturedVals.get(3).getTerminalLayoutId());
+    }
+
+    @Test
+    void testGetLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentTesterBacklog() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetTesterBacklog() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentRefurbPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetRefurbPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testChangeBatteryTesterPriority() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testChangeBatteryRefurbPriority() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetTesterMaintenanceLogs() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetRefurbMaintenanceLogs() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testRemoveLabBattery() {
+        // TODO: Implement test
     }
 }

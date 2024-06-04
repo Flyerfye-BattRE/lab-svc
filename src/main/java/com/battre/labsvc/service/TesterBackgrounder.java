@@ -1,6 +1,8 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.model.TesterResultRecord;
+import com.battre.labsvc.model.TesterStationType;
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterStationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,14 +97,14 @@ public class TesterBackgrounder implements Runnable {
 
     void checkAndAllocateTesters() {
         logger.info("Running checkAndAllocateTesters");
-        List<Object[]> testerBacklog = testerBacklogRepo.getPendingTesterBacklog();
+        List<TesterBacklogType> testerBacklog = testerBacklogRepo.getCurrentTesterBacklog();
         Map<Integer, List<Integer>> availTesters = getAvailableTesterStationsGroupedByLayout();
 
-        for (Object[] backlogEntry : testerBacklog) {
-            int testerBacklogId = (Integer) backlogEntry[0];
-            int terminalLayoutId = (Integer) backlogEntry[1];
-            int testSchemeId = (Integer) backlogEntry[2];
-            int batteryId = (Integer) backlogEntry[3];
+        for (TesterBacklogType backlogEntry : testerBacklog) {
+            int testerBacklogId = backlogEntry.getTesterBacklogId();
+            int terminalLayoutId = backlogEntry.getTerminalLayoutId();
+            int testSchemeId = backlogEntry.getTestSchemeId();
+            int batteryId = backlogEntry.getBatteryId();
 
             logger.info("Tester backlog [" + testerBacklogId + "] for battery " + batteryId + " looking for tester");
             // if the desired terminal layout is present in the avail testers mapping
@@ -138,11 +140,11 @@ public class TesterBackgrounder implements Runnable {
     }
 
     private Map<Integer, List<Integer>> getAvailableTesterStationsGroupedByLayout() {
-        List<Object[]> results = testerStationsRepo.getAvailableTesterStations();
+        List<TesterStationType> results = testerStationsRepo.getAvailableTesterStations();
         return results.stream()
                 .collect(Collectors.groupingBy(
-                        result -> (Integer) result[1], // terminal_layout_id
-                        Collectors.mapping(result -> (Integer) result[0], // tester_stn_id
+                        result -> result.getTerminalLayoutId(),
+                        Collectors.mapping(result -> result.getTesterStnId(),
                                 Collectors.toList())
                 ));
     }

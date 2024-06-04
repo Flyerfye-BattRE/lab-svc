@@ -40,6 +40,23 @@ public class TesterStationType {
         // Default constructor for Spring Data JPA
     }
 
+    public TesterStationType(int testerStnId, int terminalLayoutId) {
+        this.testerStnId = testerStnId;
+        this.terminalLayoutId = terminalLayoutId;
+    }
+
+    public TesterStationType(int terminalLayoutId) {
+        this.terminalLayoutId = terminalLayoutId;
+    }
+
+    public Integer getTesterStnId() {
+        return testerStnId;
+    }
+
+    public Integer getTerminalLayoutId() {
+        return terminalLayoutId;
+    }
+
     public Boolean isInUse() {
         return inUse;
     }
@@ -62,5 +79,21 @@ public class TesterStationType {
 
     public void setLastActiveDate() {
         this.lastActiveDate = Timestamp.from(Instant.now());
+    }
+
+    public Timestamp getLastCalibrationDate() {
+        return lastCalibrationDate;
+    }
+
+    public void setLastCalibrationDate() {
+        this.lastCalibrationDate = Timestamp.from(Instant.now());
+    }
+
+    public Timestamp getNextCalibrationDate() {
+        return nextCalibrationDate;
+    }
+
+    public void setNextCalibrationDate(Timestamp nextCalibrationDate) {
+        this.nextCalibrationDate = nextCalibrationDate;
     }
 }

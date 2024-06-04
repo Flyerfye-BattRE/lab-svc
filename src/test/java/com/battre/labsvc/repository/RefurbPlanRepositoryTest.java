@@ -24,6 +24,11 @@ public class RefurbPlanRepositoryTest {
     private RefurbPlanRepository refurbPlanRepo;
 
     @Test
+    public void testGetPendingRefurbPlanForBatteryId() {
+        // TODO: Implement test
+    }
+
+    @Test
     @Sql(scripts = {"/testdb/test-rpr-populateRefurbPlan.sql"})
     public void testMarkRefurbPlanBusy() {
         refurbPlanRepo.markRefurbPlanBusy(2);
@@ -64,6 +69,11 @@ public class RefurbPlanRepositoryTest {
         RefurbPlanType result = refurbPlanRepo.findByRefurbPlanId(1);
         assertEquals(endDate, result.getRefurbPlanEndDate());
 
+    }
+
+    @Test
+    public void testSetBatteryRefurbPriority() {
+        // TODO: Implement test
     }
 
     @Test
@@ -108,8 +118,8 @@ public class RefurbPlanRepositoryTest {
 
     @Test
     @Sql(scripts = {"/testdb/test-rpr-populateRefurbPlan.sql"})
-    public void testGetPendingRefurbPlans() {
-        List<Object[]> pendingPlans = refurbPlanRepo.getPendingRefurbPlans();
+    public void testGetCurrentRefurbSchemeStatuses() {
+        List<Object[]> pendingPlans = refurbPlanRepo.getCurrentRefurbSchemeStatuses();
 
         // Verify the result
         // confirm pending refurb plans returned
@@ -118,5 +128,15 @@ public class RefurbPlanRepositoryTest {
         // refurbPlanId is first field returned
         int refurbPlanId = (Integer) pendingPlans.get(0)[0];
         assertEquals(1, refurbPlanId);
+    }
+
+    @Test
+    public void testGetCurrentRefurbPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    public void testGetRefurbPlans() {
+        // TODO: Implement test
     }
 }

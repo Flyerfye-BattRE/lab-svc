@@ -13,10 +13,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "TesterRecords", schema = "LabSvcSchema")
 public class TesterRecordType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tester_record_id")
-    private Integer testerRecordId;
     @Column(name = "tester_stn_id", nullable = false)
     private final Integer testerStnId;
     @Column(name = "battery_id", nullable = false)
@@ -29,6 +25,10 @@ public class TesterRecordType {
     private final Integer resultTypeId;
     @Column(name = "test_date", nullable = false)
     private final Timestamp testDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "tester_record_id")
+    private Integer testerRecordId;
 
     public TesterRecordType() {
         // Default constructor for Spring Data JPA

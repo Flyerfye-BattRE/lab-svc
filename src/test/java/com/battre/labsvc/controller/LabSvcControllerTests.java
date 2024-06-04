@@ -1,6 +1,6 @@
-package com.battre.labsvc.service;
+package com.battre.labsvc.controller;
 
-import com.battre.labsvc.controller.LabSvcController;
+import com.battre.labsvc.service.LabSvc;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
 import com.battre.stubs.services.ProcessLabBatteriesResponse;
 import io.grpc.stub.StreamObserver;
@@ -82,5 +82,60 @@ public class LabSvcControllerTests {
         verify(labSvc).addBatteriesToTesterBacklog(any(List.class));
         verify(responseProcessLabBatteriesResponse).onNext(ProcessLabBatteriesResponse.newBuilder().setSuccess(false).build());
         verify(responseProcessLabBatteriesResponse).onCompleted();
+    }
+
+    @Test
+    void testGetLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentTesterBacklog() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetTesterBacklog() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetCurrentRefurbPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetRefurbPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testChangeBatteryTesterPriority() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testChangeBatteryRefurbPriority() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetTesterMaintenanceLogs() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testGetRefurbMaintenanceLogs() {
+        // TODO: Implement test
+    }
+
+    @Test
+    void testRemoveLabBattery() {
+        // TODO: Implement test
     }
 }

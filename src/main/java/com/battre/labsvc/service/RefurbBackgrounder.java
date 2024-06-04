@@ -97,7 +97,7 @@ public class RefurbBackgrounder implements Runnable {
 
     void checkAndAllocateRefurb() throws InterruptedException {
         logger.info("Running checkAndAllocateRefurb");
-        List<Object[]> refurbPlans = refurbPlanRepo.getPendingRefurbPlans();
+        List<Object[]> refurbPlans = refurbPlanRepo.getCurrentRefurbSchemeStatuses();
         Map<String, List<Integer>> availRefurbStns = getAvailableRefurbStnsGroupedByClass();
 
         for (Object[] refurbPlanEntry : refurbPlans) {

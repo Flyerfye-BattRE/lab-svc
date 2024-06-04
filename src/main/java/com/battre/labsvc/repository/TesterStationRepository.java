@@ -16,11 +16,16 @@ public interface TesterStationRepository extends JpaRepository<TesterStationType
     // Leverages JPA built in query func
     TesterStationType findByTesterStnId(int testerStnId);
 
-    @Query("SELECT testerStnId, terminalLayoutId " +
-            "FROM TesterStationType " +
+    @Query("SELECT tst " +
+            "FROM TesterStationType AS tst " +
             "WHERE inUse = false AND activeBatteryId IS NULL " +
             "ORDER BY lastActiveDate ASC")
-    List<Object[]> getAvailableTesterStations();
+    List<TesterStationType> getAvailableTesterStations();
+
+    @Query("SELECT tst " +
+            "FROM TesterStationType AS tst " +
+            "ORDER BY testerStnId ")
+    List<TesterStationType> getTesterStationLogs();
 
     @Transactional
     @Modifying

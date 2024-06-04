@@ -1,5 +1,7 @@
 package com.battre.labsvc.service;
 
+import com.battre.labsvc.model.TesterBacklogType;
+import com.battre.labsvc.model.TesterStationType;
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterStationRepository;
 import org.junit.jupiter.api.Test;
@@ -33,23 +35,26 @@ public class TesterBackgrounderTest {
     @Test
     public void testCheckAndAllocateTesters() throws Exception {
         // testerBacklogId, terminalLayoutId, testSchemeId, batteryId
-        List<Object[]> mockBacklog = List.<Object[]>of(
-                new Object[]{1, 3, 4, 2}
+        TesterBacklogType mockTesterBacklogEntry = new TesterBacklogType(2, 4, 3);
+        mockTesterBacklogEntry.setTesterBacklogId(1);
+
+        List<TesterBacklogType> mockBacklog = List.of(
+                mockTesterBacklogEntry
         );
-        when(testerBacklogRepo.getPendingTesterBacklog()).thenReturn(mockBacklog);
+        when(testerBacklogRepo.getCurrentTesterBacklog()).thenReturn(mockBacklog);
         // testerStationId, terminalLayoutId
-        List<Object[]> mockStations = Arrays.asList(
-                new Object[]{2, 3},
-                new Object[]{5, 6}
+        List<TesterStationType> mockStations = Arrays.asList(
+                new TesterStationType(1, 3),
+                new TesterStationType(2, 6)
         );
         when(testerStationsRepo.getAvailableTesterStations()).thenReturn(mockStations);
 
         testerBackgrounder.checkAndAllocateTesters();
 
         // Verify
-        verify(testerBacklogRepo).getPendingTesterBacklog();
+        verify(testerBacklogRepo).getCurrentTesterBacklog();
         verify(testerStationsRepo).getAvailableTesterStations();
         verify(testerBacklogRepo).endTesterBacklogEntry(eq(1), any(Timestamp.class));
-        verify(testerStationsRepo).markTesterInUse(eq(2), eq(2), any(Timestamp.class));
+        verify(testerStationsRepo).markTesterInUse(eq(1), eq(2), any(Timestamp.class));
     }
 }

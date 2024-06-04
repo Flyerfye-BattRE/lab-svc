@@ -82,3 +82,22 @@ SELECT * FROM (VALUES
 WHERE NOT EXISTS (
     SELECT 1 FROM LabSvcSchema.ResultTypes
 );
+
+-- Insert statements for the "PlanStatus" table
+INSERT INTO LabSvcSchema.LabPlanStatus (lab_plan_status_id, status)
+SELECT * FROM (VALUES
+	(0, 'UNKNOWN'),
+	(1, 'TESTER BACKLOG-NEW'),
+	(2, 'TESTER BACKLOG-RETRY'),
+	(3, 'TESTER-REJECTED'),
+	(4, 'REFURB BACKLOG-NEW'),
+	(5, 'REFURB BACKLOG-CONT'),
+	(6, 'REFURB BACKLOG-RETRY'),
+	(7, 'REFURB-REJECTED'),
+	(8, 'PASS'),
+	(9, 'DESTROYED'),
+	(10, 'LOST')
+) AS v (lab_plan_status_id, status)
+WHERE NOT EXISTS (
+    SELECT 1 FROM LabSvcSchema.LabPlanStatus
+);

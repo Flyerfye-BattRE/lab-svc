@@ -13,25 +13,20 @@ import java.time.Instant;
 @Entity
 @Table(name = "RefurbPlans", schema = "LabSvcSchema")
 public class RefurbPlanType {
+    @Column(name = "battery_id", nullable = false)
+    private final Integer batteryId;
+    @Column(name = "refurb_plan_priority", nullable = false)
+    private final Integer refurbPlanPriority;
+    @Column(name = "refurb_plan_start_date", nullable = false)
+    private final Timestamp refurbPlanStartDate;
+    @Column(name = "available")
+    private final Boolean available = true;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refurb_plan_id")
     private Integer refurbPlanId;
-    @Column(name = "battery_id", nullable = false)
-    private final Integer batteryId;
-
-    @Column(name = "refurb_plan_priority", nullable = false)
-    private final Integer refurbPlanPriority;
-
-    @Column(name = "refurb_plan_start_date", nullable = false)
-    private final Timestamp refurbPlanStartDate;
-
     @Column(name = "refurb_plan_end_date")
     private Timestamp refurbPlanEndDate;
-
-    @Column(name = "available")
-    private final Boolean available = true;
-
     @Column(name = "resolder")
     private Boolean resolder = false;
 

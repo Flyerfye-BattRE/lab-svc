@@ -12,8 +12,8 @@ import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbSchemesRepository;
 import com.battre.labsvc.repository.TesterBacklogRepository;
 import com.battre.labsvc.repository.TesterRecordsRepository;
-import com.battre.stubs.services.RemoveBatteryRequest;
-import com.battre.stubs.services.RemoveBatteryResponse;
+import com.battre.stubs.services.RemoveStorageBatteryRequest;
+import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
@@ -83,16 +83,16 @@ public class TesterResultProcessorTest {
         );
     }
 
-    public void mockUpdateStorageSvcRemoveBattery(RemoveBatteryResponse response) {
+    public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
         doAnswer(invocation -> {
-            StreamObserver<RemoveBatteryResponse> observer = invocation.getArgument(3);
+            StreamObserver<RemoveStorageBatteryResponse> observer = invocation.getArgument(3);
             observer.onNext(response);
             observer.onCompleted();
             return null;
         }).when(grpcMethodInvoker).callMethod(
                 eq("storagesvc"),
-                eq("removeBattery"),
-                any(RemoveBatteryRequest.class),
+                eq("removeStorageBattery"),
+                any(RemoveStorageBatteryRequest.class),
                 any(StreamObserver.class)
         );
     }
@@ -225,8 +225,8 @@ public class TesterResultProcessorTest {
                 UpdateBatteryStatusResponse.newBuilder().build();
         mockUpdateBatteryStatus(response);
 
-        RemoveBatteryResponse storageSvcResponse =
-                RemoveBatteryResponse.newBuilder().build();
+        RemoveStorageBatteryResponse storageSvcResponse =
+                RemoveStorageBatteryResponse.newBuilder().build();
         mockUpdateStorageSvcRemoveBattery(storageSvcResponse);
 
         testerResultProcessor.processTesterResults();
@@ -240,8 +240,8 @@ public class TesterResultProcessorTest {
         );
         verify(grpcMethodInvoker, times(1)).callMethod(
                 eq("storagesvc"),
-                eq("removeBattery"),
-                any(RemoveBatteryRequest.class),
+                eq("removeStorageBattery"),
+                any(RemoveStorageBatteryRequest.class),
                 any(StreamObserver.class)
         );
     }

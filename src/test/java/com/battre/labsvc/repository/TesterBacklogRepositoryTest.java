@@ -24,23 +24,38 @@ public class TesterBacklogRepositoryTest {
     private TesterBacklogRepository testerBacklogRepo;
 
     @Test
+    public void testGetCurrentTesterBacklogForBatteryId() {
+        // TODO: Implement test
+    }
+
+    @Test
+    public void testSetBatteryTesterPriority() {
+        // TODO: Implement test
+    }
+
+    @Test
     @Sql(scripts = {"/testdb/test-tbr-populateTesterBacklog.sql"})
-    public void testGetPendingTesterBacklog() {
-        List<Object[]> pendingBacklog = testerBacklogRepo.getPendingTesterBacklog();
+    public void testGetCurrentTesterBacklog() {
+        List<TesterBacklogType> testerBacklog = testerBacklogRepo.getCurrentTesterBacklog();
 
         // Verify the result
         // confirm pending tester backlog returned
-        assertNotNull(pendingBacklog);
-        assertEquals(1, pendingBacklog.size());
+        assertNotNull(testerBacklog);
+        assertEquals(1, testerBacklog.size());
         // returned fields are: testerBacklogId, terminalLayoutId, testSchemeId, batteryId
-        int testerBacklogId = (Integer) pendingBacklog.get(0)[0];
-        int terminalLayoutId = (Integer) pendingBacklog.get(0)[1];
-        int testSchemeId = (Integer) pendingBacklog.get(0)[2];
-        int batteryId = (Integer) pendingBacklog.get(0)[3];
+        int testerBacklogId = testerBacklog.get(0).getTesterBacklogId();
+        int terminalLayoutId = testerBacklog.get(0).getTerminalLayoutId();
+        int testSchemeId = testerBacklog.get(0).getTestSchemeId();
+        int batteryId = testerBacklog.get(0).getBatteryId();
         assertEquals(2, testerBacklogId);
         assertEquals(4, terminalLayoutId);
         assertEquals(5, testSchemeId);
         assertEquals(6, batteryId);
+    }
+
+    @Test
+    public void testGetTesterBacklog() {
+        // TODO: Implement test
     }
 
     @Test

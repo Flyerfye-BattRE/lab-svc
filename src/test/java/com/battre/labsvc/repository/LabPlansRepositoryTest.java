@@ -35,23 +35,43 @@ public class LabPlansRepositoryTest {
     }
 
     @Test
+    public void testGetCurrentLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
+    public void testGetLabPlans() {
+        // TODO: Implement test
+    }
+
+    @Test
     @Sql(scripts = {"/testdb/test-lpr-populateLabPlans.sql"})
     public void testSetTesterRecordForLabPlan() {
-        labPlansRepo.setTesterRecordForLabPlan(1, 7);
+        labPlansRepo.setTesterRecordForLabPlan(1, 4);
 
         // Verify the result
         LabPlanType result = labPlansRepo.findByLabPlanId(1);
-        assertEquals(7, result.getTesterRecordId());
+        assertEquals(4, result.getTesterRecordId());
     }
 
     @Test
     @Sql(scripts = {"/testdb/test-lpr-populateLabPlans.sql"})
     public void testSetRefurbPlanForLabPlan() {
-        labPlansRepo.setRefurbPlanForLabPlan(2, 8);
+        labPlansRepo.setRefurbPlanForLabPlan(2, 5);
 
         // Verify the result
         LabPlanType result = labPlansRepo.findByLabPlanId(2);
-        assertEquals(8, result.getRefurbPlanId());
+        assertEquals(5, result.getRefurbPlanId());
+    }
+
+    @Test
+    @Sql(scripts = {"/testdb/test-lpr-populateLabPlans.sql"})
+    public void testSetPlanStatusesForPlanId() {
+        labPlansRepo.setPlanStatusesForPlanId(2, "PASS");
+
+        // Verify the result
+        LabPlanType result = labPlansRepo.findByLabPlanId(2);
+        assertEquals(8, result.getLabPlanStatusId());
     }
 
     @Test

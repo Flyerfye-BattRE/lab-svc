@@ -45,7 +45,7 @@ public class RefurbBackgrounderTest {
                 new Object[]{2, 3, false, true, false, false},
                 new Object[]{3, 4, false, false, false, false}
         );
-        when(refurbPlanRepo.getPendingRefurbPlans()).thenReturn(mockPlans);
+        when(refurbPlanRepo.getCurrentRefurbSchemeStatuses()).thenReturn(mockPlans);
 
         // refurbStnId, stationClass
         List<Object[]> mockStns = Arrays.asList(
@@ -58,7 +58,7 @@ public class RefurbBackgrounderTest {
         refurbBackgrounder.checkAndAllocateRefurb();
 
         // Verify results
-        verify(refurbPlanRepo).getPendingRefurbPlans();
+        verify(refurbPlanRepo).getCurrentRefurbSchemeStatuses();
         verify(refurbPlanRepo, times(3)).markRefurbPlanBusy(anyInt());
         verify(refurbStationsRepo, times(1)).markRefurbStnInUse(eq(1), eq(2), any(Timestamp.class));
         verify(refurbStationsRepo, times(1)).markRefurbStnInUse(eq(2), eq(3), any(Timestamp.class));

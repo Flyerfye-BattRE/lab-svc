@@ -19,11 +19,25 @@ public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> 
 
     LabPlanType findByRefurbPlanId(int refurbPlanId);
 
+    LabPlanType findByBatteryId(int batteryId);
+
     @Query("SELECT labPlanId " +
             "FROM LabPlanType " +
             "WHERE batteryId = :batteryId AND labPlanEndDate IS NULL " +
             "ORDER BY labPlanId DESC")
     List<Integer> getLabPlanIdsForBatteryId(@Param("batteryId") int batteryId);
+
+    @Query("SELECT lpt " +
+            "FROM LabPlanType AS lpt " +
+            "WHERE lpt.labPlanEndDate IS NULL " +
+            "ORDER BY labPlanId")
+    List<LabPlanType> getCurrentLabPlans();
+
+    @Query("SELECT lpt " +
+            "FROM LabPlanType AS lpt " +
+            "ORDER BY labPlanId " +
+            "LIMIT 1000")
+    List<LabPlanType> getLabPlans();
 
     @Transactional
     @Modifying
@@ -38,6 +52,18 @@ public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> 
             "SET refurbPlanId = :refurbPlanId " +
             "WHERE labPlanId = :labPlanId")
     void setRefurbPlanForLabPlan(@Param("labPlanId") int labPlanId, @Param("refurbPlanId") int refurbPlanId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE LabPlanType " +
+            "SET labPlanStatusId = (" +
+                "SELECT labPlanStatusId " +
+                "FROM LabPlanStatusType " +
+                "WHERE status = :planStatus" +
+            ") " +
+            "WHERE labPlanId = :labPlanId")
+    void setPlanStatusesForPlanId(@Param("labPlanId") int labPlanId,
+                                  @Param("planStatus") String planStatus);
 
     @Transactional
     @Modifying

@@ -2,6 +2,7 @@ package com.battre.labsvc.service;
 
 
 import com.battre.grpcifc.GrpcMethodInvoker;
+import com.battre.labsvc.enums.LabPlanStatusEnum;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.RefurbRecordType;
@@ -10,8 +11,8 @@ import com.battre.labsvc.repository.LabPlansRepository;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbRecordsRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
-import com.battre.stubs.services.RemoveBatteryRequest;
-import com.battre.stubs.services.RemoveBatteryResponse;
+import com.battre.stubs.services.RemoveStorageBatteryRequest;
+import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
@@ -76,16 +77,16 @@ public class RefurbResultProcessorTest {
         );
     }
 
-    public void mockUpdateStorageSvcRemoveBattery(RemoveBatteryResponse response) {
+    public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
         doAnswer(invocation -> {
-            StreamObserver<RemoveBatteryResponse> observer = invocation.getArgument(3);
+            StreamObserver<RemoveStorageBatteryResponse> observer = invocation.getArgument(3);
             observer.onNext(response);
             observer.onCompleted();
             return null;
         }).when(grpcMethodInvoker).callMethod(
                 eq("storagesvc"),
-                eq("removeBattery"),
-                any(RemoveBatteryRequest.class),
+                eq("removeStorageBattery"),
+                any(RemoveStorageBatteryRequest.class),
                 any(StreamObserver.class)
         );
     }
@@ -114,6 +115,9 @@ public class RefurbResultProcessorTest {
         when(refurbRecordsRepo.save(any(RefurbRecordType.class))).thenReturn(refurbRecord);
         when(refurbPlanRepo.checkRefurbPlanCompleted(anyInt())).thenReturn(true);
 
+        List<Integer> mockLabPlanIdsList = List.of(2);
+        when(labPlansRepo.getLabPlanIdsForBatteryId(eq(3))).thenReturn(mockLabPlanIdsList);
+
         UpdateBatteryStatusResponse response =
                 UpdateBatteryStatusResponse.newBuilder().build();
         mockUpdateBatteryStatus(response);
@@ -123,6 +127,7 @@ public class RefurbResultProcessorTest {
         verify(refurbPlanRepo, times(1)).setResolderRecord(eq(1), eq(5));
         verify(refurbStationsRepo, times(1)).markRefurbStnFree(eq(2), any(Timestamp.class));
         verify(labPlansRepo, times(1)).endLabPlanEntryForRefurbPlan(eq(1), any(Timestamp.class));
+        verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.PASS.toString()));
         verify(refurbPlanRepo, times(1)).endRefurbPlanEntry(eq(1), any(Timestamp.class));
         verify(grpcMethodInvoker, times(1)).callMethod(
                 eq("opssvc"),
@@ -156,6 +161,9 @@ public class RefurbResultProcessorTest {
         when(refurbRecordsRepo.save(any(RefurbRecordType.class))).thenReturn(refurbRecord);
         when(refurbPlanRepo.checkRefurbPlanCompleted(anyInt())).thenReturn(true);
 
+        List<Integer> mockLabPlanIdsList = List.of(2);
+        when(labPlansRepo.getLabPlanIdsForBatteryId(eq(3))).thenReturn(mockLabPlanIdsList);
+
         UpdateBatteryStatusResponse response =
                 UpdateBatteryStatusResponse.newBuilder().build();
         mockUpdateBatteryStatus(response);
@@ -163,6 +171,7 @@ public class RefurbResultProcessorTest {
         refurbResultProcessor.processRefurbResults();
 
         verify(labPlansRepo, times(1)).endLabPlanEntryForRefurbPlan(eq(1), any(Timestamp.class));
+        verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.PASS.toString()));
         verify(refurbPlanRepo, times(1)).endRefurbPlanEntry(eq(1), any(Timestamp.class));
         verify(grpcMethodInvoker, times(1)).callMethod(
                 eq("opssvc"),
@@ -195,8 +204,12 @@ public class RefurbResultProcessorTest {
         refurbRecord.setRefurbRecordId(5);
         when(refurbRecordsRepo.save(any(RefurbRecordType.class))).thenReturn(refurbRecord);
 
+        List<Integer> mockLabPlanIdsList = List.of(2);
+        when(labPlansRepo.getLabPlanIdsForBatteryId(eq(3))).thenReturn(mockLabPlanIdsList);
+
         refurbResultProcessor.processRefurbResults();
 
+        verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.REFURB_BACKLOG_RETRY.toString()));
         verify(refurbStationsRepo, times(1)).markRefurbStnFree(eq(2), any(Timestamp.class));
         verify(refurbPlanRepo, times(1)).markRefurbPlanAvail(eq(1));
     }
@@ -231,8 +244,8 @@ public class RefurbResultProcessorTest {
                 UpdateBatteryStatusResponse.newBuilder().build();
         mockUpdateBatteryStatus(opsSvcResponse);
 
-        RemoveBatteryResponse storageSvcResponse =
-                RemoveBatteryResponse.newBuilder().build();
+        RemoveStorageBatteryResponse storageSvcResponse =
+                RemoveStorageBatteryResponse.newBuilder().build();
         mockUpdateStorageSvcRemoveBattery(storageSvcResponse);
 
         refurbResultProcessor.processRefurbResults();
@@ -249,8 +262,8 @@ public class RefurbResultProcessorTest {
         );
         verify(grpcMethodInvoker, times(1)).callMethod(
                 eq("storagesvc"),
-                eq("removeBattery"),
-                any(RemoveBatteryRequest.class),
+                eq("removeStorageBattery"),
+                any(RemoveStorageBatteryRequest.class),
                 any(StreamObserver.class)
         );
     }
