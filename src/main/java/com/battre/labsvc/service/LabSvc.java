@@ -18,7 +18,6 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
-import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -265,49 +262,14 @@ public class LabSvc {
                 .addAllBatteryTypeIds(batteryTypeIds)
                 .build();
 
-        CompletableFuture<GetBatteryTerminalLayoutsResponse> responseFuture = new CompletableFuture<>();
-
-        // Create a StreamObserver to handle the response asynchronously
-        StreamObserver<GetBatteryTerminalLayoutsResponse> responseObserver = new StreamObserver<>() {
-            private GetBatteryTerminalLayoutsResponse batteryTerminalLayoutsResponse;
-
-            @Override
-            public void onNext(GetBatteryTerminalLayoutsResponse response) {
-                responseFuture.complete(response);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                // Handle any errors
-                logger.severe("getBatteryTerminalLayouts() errored: " + t.getMessage());
-                responseFuture.completeExceptionally(t);
-            }
-
-            @Override
-            public void onCompleted() {
-                // Handle the completion
-                logger.info("getBatteryTerminalLayouts() completed");
-            }
-        };
-
-        grpcMethodInvoker.callMethod(
+        GetBatteryTerminalLayoutsResponse response = grpcMethodInvoker.invokeNonblock(
                 "specsvc",
                 "getBatteryTerminalLayouts",
-                request,
-                responseObserver
+                request
         );
 
-        Map<Integer, Integer> batteryTypeToTerminalIds = null;
-
-        // Wait for the response or 1 sec handle timeout
-        try {
-            // Blocks until the response is available
-            batteryTypeToTerminalIds = convertToBatteryTypeTerminalMap(
-                    responseFuture.get(5, TimeUnit.SECONDS).getBatteriesList()
-            );
-        } catch (Exception e) {
-            logger.severe("getBatteryTerminalLayouts() responseFuture error: " + e.getMessage());
-        }
+        Map<Integer, Integer> batteryTypeToTerminalIds = convertToBatteryTypeTerminalMap(
+                response.getBatteriesList());
 
         return batteryTypeToTerminalIds;
     }

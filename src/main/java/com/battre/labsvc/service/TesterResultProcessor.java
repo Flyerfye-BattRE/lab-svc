@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 @Service
@@ -140,6 +139,7 @@ public class TesterResultProcessor implements Runnable {
                 // Update lab plan with refurb plan id
                 labPlansRepo.setRefurbPlanForLabPlan(labPlans.get(0), savedRefurbPlan.getRefurbPlanId());
                 labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_NEW.toString());
+                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_NEW.getStatusDescription());
 
                 // Call OpsSvc to update battery status to refurb
                 updateOpsSvcBatteryStatus(trr.batteryId(), BatteryStatus.REFURB);
@@ -156,13 +156,13 @@ public class TesterResultProcessor implements Runnable {
                     trr.terminalLayoutId()
             );
             testerBacklogRepo.save(testerBacklogEntry);
-            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.TESTER_BACKLOG_RETRY.toString());
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.TESTER_BACKLOG_RETRY.getStatusDescription());
         } else {
             // Fail-Reject
             logger.info("Battery [" + trr.batteryId() + "] FAILS > Rejected");
             // Update lab plan with end date
             labPlansRepo.endLabPlan(labPlans.get(0), Timestamp.from(Instant.now()));
-            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.TESTER_REJECTED.toString());
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.TESTER_REJECTED.getStatusDescription());
 
             // Call OpsSvc to update battery status to rejected
             updateOpsSvcBatteryStatus(trr.batteryId(), BatteryStatus.REJECTED);
@@ -180,44 +180,13 @@ public class TesterResultProcessor implements Runnable {
         UpdateBatteryStatusRequest request =
                 UpdateBatteryStatusRequest.newBuilder().setBattery(batteryIdStatus).build();
 
-        CompletableFuture<UpdateBatteryStatusResponse> responseFuture = new CompletableFuture<>();
-        StreamObserver<UpdateBatteryStatusResponse> responseObserver = new StreamObserver<>() {
-            @Override
-            public void onNext(UpdateBatteryStatusResponse response) {
-                responseFuture.complete(response);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                // Handle any errors
-                logger.severe("updateOpsSvcBatteryStatus() errored: " + t.getMessage());
-                responseFuture.completeExceptionally(t);
-            }
-
-            @Override
-            public void onCompleted() {
-                logger.info("updateOpsSvcBatteryStatus() completed");
-            }
-        };
-
-        grpcMethodInvoker.callMethod(
+        UpdateBatteryStatusResponse response = grpcMethodInvoker.invokeNonblock(
                 "opssvc",
                 "updateBatteryStatus",
-                request,
-                responseObserver
+                request
         );
 
-        boolean result = false;
-        // Wait for the response or 1 sec handle timeout
-        try {
-            // Blocks until the response is available
-            result = responseFuture.get(5, TimeUnit.SECONDS).getSuccess();
-            logger.info("updateOpsSvcBatteryStatus() responseFuture response: " + result);
-        } catch (Exception e) {
-            logger.severe("updateOpsSvcBatteryStatus() responseFuture error: " + e.getMessage());
-        }
-
-        return result;
+        return response.getSuccess();
     }
 
     private boolean updateStorageSvcRemoveBattery(int batteryId) {
@@ -244,23 +213,12 @@ public class TesterResultProcessor implements Runnable {
             }
         };
 
-        grpcMethodInvoker.callMethod(
+        RemoveStorageBatteryResponse response = grpcMethodInvoker.invokeNonblock(
                 "storagesvc",
                 "removeStorageBattery",
-                request,
-                responseObserver
+                request
         );
 
-        boolean result = false;
-        // Wait for the response or 1 sec handle timeout
-        try {
-            // Blocks until the response is available
-            result = responseFuture.get(5, TimeUnit.SECONDS).getSuccess();
-            logger.info("updateStorageSvcRemoveBattery() responseFuture response: " + result);
-        } catch (Exception e) {
-            logger.severe("updateStorageSvcRemoveBattery() responseFuture error: " + e.getMessage());
-        }
-
-        return result;
+        return response.getSuccess();
     }
 }

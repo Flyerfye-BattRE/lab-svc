@@ -1,6 +1,5 @@
 package com.battre.labsvc.service;
 
-
 import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.enums.LabPlanStatusEnum;
 import com.battre.labsvc.enums.LabResult;
@@ -15,7 +14,6 @@ import com.battre.stubs.services.RemoveStorageBatteryRequest;
 import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
-import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,7 +27,6 @@ import java.util.concurrent.BlockingQueue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,31 +61,19 @@ public class RefurbResultProcessorTest {
     }
 
     public void mockUpdateBatteryStatus(UpdateBatteryStatusResponse response) {
-        doAnswer(invocation -> {
-            StreamObserver<UpdateBatteryStatusResponse> observer = invocation.getArgument(3);
-            observer.onNext(response);
-            observer.onCompleted();
-            return null;
-        }).when(grpcMethodInvoker).callMethod(
+        when(grpcMethodInvoker.invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
-        );
+                any(UpdateBatteryStatusRequest.class)
+        )).thenReturn(response);
     }
 
     public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
-        doAnswer(invocation -> {
-            StreamObserver<RemoveStorageBatteryResponse> observer = invocation.getArgument(3);
-            observer.onNext(response);
-            observer.onCompleted();
-            return null;
-        }).when(grpcMethodInvoker).callMethod(
+        when(grpcMethodInvoker.invokeNonblock(
                 eq("storagesvc"),
                 eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class),
-                any(StreamObserver.class)
-        );
+                any(RemoveStorageBatteryRequest.class)
+        )).thenReturn(response);
     }
 
     @Test
@@ -129,11 +114,10 @@ public class RefurbResultProcessorTest {
         verify(labPlansRepo, times(1)).endLabPlanEntryForRefurbPlan(eq(1), any(Timestamp.class));
         verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.PASS.toString()));
         verify(refurbPlanRepo, times(1)).endRefurbPlanEntry(eq(1), any(Timestamp.class));
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
+                any(UpdateBatteryStatusRequest.class)
         );
     }
 
@@ -173,11 +157,10 @@ public class RefurbResultProcessorTest {
         verify(labPlansRepo, times(1)).endLabPlanEntryForRefurbPlan(eq(1), any(Timestamp.class));
         verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.PASS.toString()));
         verify(refurbPlanRepo, times(1)).endRefurbPlanEntry(eq(1), any(Timestamp.class));
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
+                any(UpdateBatteryStatusRequest.class)
         );
     }
 
@@ -209,7 +192,7 @@ public class RefurbResultProcessorTest {
 
         refurbResultProcessor.processRefurbResults();
 
-        verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.REFURB_BACKLOG_RETRY.toString()));
+        verify(labPlansRepo, times(1)).setPlanStatusesForPlanId(eq(2), eq(LabPlanStatusEnum.REFURB_BACKLOG_RETRY.getStatusDescription()));
         verify(refurbStationsRepo, times(1)).markRefurbStnFree(eq(2), any(Timestamp.class));
         verify(refurbPlanRepo, times(1)).markRefurbPlanAvail(eq(1));
     }
@@ -254,17 +237,15 @@ public class RefurbResultProcessorTest {
         verify(refurbStationsRepo, times(1)).markRefurbStnFree(eq(2), any(Timestamp.class));
         verify(labPlansRepo, times(1)).endLabPlan(eq(4), any(Timestamp.class));
         verify(refurbPlanRepo, times(1)).endRefurbPlanEntry(eq(1), any(Timestamp.class));
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
+                any(UpdateBatteryStatusRequest.class)
         );
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("storagesvc"),
                 eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class),
-                any(StreamObserver.class)
+                any(RemoveStorageBatteryRequest.class)
         );
     }
 }

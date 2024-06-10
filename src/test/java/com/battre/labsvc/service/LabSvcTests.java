@@ -14,7 +14,6 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
-import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LabSvcTests {
     @Mock
@@ -54,17 +53,11 @@ public class LabSvcTests {
     private AutoCloseable closeable;
 
     public void mockGetBatteryTerminalLayouts(GetBatteryTerminalLayoutsResponse response) {
-        doAnswer(invocation -> {
-            StreamObserver<GetBatteryTerminalLayoutsResponse> observer = invocation.getArgument(3);
-            observer.onNext(response);
-            observer.onCompleted();
-            return null;
-        }).when(grpcMethodInvoker).callMethod(
+        when(grpcMethodInvoker.invokeNonblock(
                 eq("specsvc"),
                 eq("getBatteryTerminalLayouts"),
-                any(GetBatteryTerminalLayoutsRequest.class),
-                any(StreamObserver.class)
-        );
+                any(GetBatteryTerminalLayoutsRequest.class)
+        )).thenReturn(response);
     }
 
     @BeforeEach

@@ -16,7 +16,6 @@ import com.battre.stubs.services.RemoveStorageBatteryRequest;
 import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
-import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +23,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 @Service
@@ -159,25 +156,25 @@ public class RefurbResultProcessor implements Runnable {
                 logger.info("Refurb Plan [" + rrr.refurbPlanId() + "] COMPLETED for Battery [" + rrr.batteryId() + "]");
 
                 labPlansRepo.endLabPlanEntryForRefurbPlan(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
-                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.PASS.toString());
+                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.PASS.getStatusDescription());
                 refurbPlanRepo.endRefurbPlanEntry(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
                 // Call OpsSvc to update battery status to Storage once refurb is done
                 updateOpsSvcBatteryStatus(rrr.batteryId(), BatteryStatus.STORAGE);
             } else {
-                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_CONT.toString());
+                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_CONT.getStatusDescription());
             }
         } else if (rrr.resultTypeId() == LabResult.FAIL_RETRY.getStatusCode()) {
             // Fail-Retry
             logger.info("Battery [" + rrr.batteryId() + "] FAILS > Retry refurb");
 
             refurbPlanRepo.markRefurbPlanAvail(rrr.refurbPlanId());
-            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_RETRY.toString());
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_RETRY.getStatusDescription());
         } else if (rrr.resultTypeId() == LabResult.FAIL_REJECT.getStatusCode()) {
             // Fail-Reject
             logger.info("Battery [" + rrr.batteryId() + "] FAILS > Rejected");
             // Update lab plan with end date
             labPlansRepo.endLabPlan(labPlans.get(0), Timestamp.from(Instant.now()));
-            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_REJECTED.toString());
+            labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_REJECTED.getStatusDescription());
             refurbPlanRepo.endRefurbPlanEntry(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
 
             // Call OpsSvc to update battery status to rejected
@@ -198,88 +195,25 @@ public class RefurbResultProcessor implements Runnable {
         UpdateBatteryStatusRequest request =
                 UpdateBatteryStatusRequest.newBuilder().setBattery(batteryIdStatus).build();
 
-        CompletableFuture<UpdateBatteryStatusResponse> responseFuture = new CompletableFuture<>();
-        StreamObserver<UpdateBatteryStatusResponse> responseObserver = new StreamObserver<>() {
-            @Override
-            public void onNext(UpdateBatteryStatusResponse response) {
-                responseFuture.complete(response);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                // Handle any errors
-                logger.severe("updateOpsSvcBatteryStatus() errored: " + t.getMessage());
-                responseFuture.completeExceptionally(t);
-            }
-
-            @Override
-            public void onCompleted() {
-                logger.info("updateOpsSvcBatteryStatus() completed");
-            }
-        };
-
-        grpcMethodInvoker.callMethod(
+        UpdateBatteryStatusResponse response = grpcMethodInvoker.invokeNonblock(
                 "opssvc",
                 "updateBatteryStatus",
-                request,
-                responseObserver
+                request
         );
 
-        boolean result = false;
-        // Wait for the response or 1 sec handle timeout
-        try {
-            // Blocks until the response is available
-            result = responseFuture.get(5, TimeUnit.SECONDS).getSuccess();
-            logger.info("updateOpsSvcBatteryStatus() responseFuture response: " + result);
-        } catch (Exception e) {
-            logger.severe("updateOpsSvcBatteryStatus() responseFuture error: " + e.getMessage());
-        }
-
-        return result;
+        return response.getSuccess();
     }
 
     private boolean updateStorageSvcRemoveBattery(int batteryId) {
         RemoveStorageBatteryRequest request =
                 RemoveStorageBatteryRequest.newBuilder().setBatteryId(batteryId).build();
 
-        CompletableFuture<RemoveStorageBatteryResponse> responseFuture = new CompletableFuture<>();
-        StreamObserver<RemoveStorageBatteryResponse> responseObserver = new StreamObserver<>() {
-            @Override
-            public void onNext(RemoveStorageBatteryResponse response) {
-                responseFuture.complete(response);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                // Handle any errors
-                logger.severe("updateStorageSvcRemoveBattery() errored: " + t.getMessage());
-                responseFuture.completeExceptionally(t);
-            }
-
-
-            @Override
-            public void onCompleted() {
-                logger.info("updateStorageSvcRemoveBattery() completed");
-            }
-        };
-
-        grpcMethodInvoker.callMethod(
+        RemoveStorageBatteryResponse response = grpcMethodInvoker.invokeNonblock(
                 "storagesvc",
                 "removeStorageBattery",
-                request,
-                responseObserver
+                request
         );
 
-        boolean result = false;
-        // Wait for the response or 1 sec handle timeout
-        try {
-            // Blocks until the response is available
-            result = responseFuture.get(5, TimeUnit.SECONDS).getSuccess();
-            logger.info("updateStorageSvcRemoveBattery() responseFuture response: " + result);
-        } catch (Exception e) {
-            logger.severe("updateStorageSvcRemoveBattery() responseFuture error: " + e.getMessage());
-        }
-
-        return result;
+        return response.getSuccess();
     }
 }

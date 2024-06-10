@@ -32,10 +32,10 @@ public class LabPlanType {
     private int batteryId;
 
     @Column(name = "tester_record_id")
-    private int testerRecordId;
+    private Integer testerRecordId;
 
     @Column(name = "refurb_plan_id")
-    private int refurbPlanId;
+    private Integer refurbPlanId;
 
     public LabPlanType() {
         // Default constructor for Spring Data JPA
@@ -83,19 +83,19 @@ public class LabPlanType {
         this.batteryId = batteryId;
     }
 
-    public int getTesterRecordId() {
+    public Integer getTesterRecordId() {
         return testerRecordId;
     }
 
-    public void setTesterRecordId(int testerRecordId) {
+    public void setTesterRecordId(Integer testerRecordId) {
         this.testerRecordId = testerRecordId;
     }
 
-    public int getRefurbPlanId() {
+    public Integer getRefurbPlanId() {
         return refurbPlanId;
     }
 
-    public void setRefurbPlanId(int refurbPlanId) {
+    public void setRefurbPlanId(Integer refurbPlanId) {
         this.refurbPlanId = refurbPlanId;
     }
 }

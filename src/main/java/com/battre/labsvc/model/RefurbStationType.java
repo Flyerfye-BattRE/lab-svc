@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Table(name = "RefurbStations", schema = "LabSvcSchema")
@@ -71,16 +72,16 @@ public class RefurbStationType {
         return lastActiveDate;
     }
 
-    public void setLastActiveDate(Timestamp lastActiveDate) {
-        this.lastActiveDate = lastActiveDate;
+    public void setLastActiveDate() {
+        this.lastActiveDate = Timestamp.from(Instant.now());
     }
 
     public Timestamp getLastCalibrationDate() {
         return lastCalibrationDate;
     }
 
-    public void setLastCalibrationDate(Timestamp lastCalibrationDate) {
-        this.lastCalibrationDate = lastCalibrationDate;
+    public void setLastCalibrationDate() {
+        this.lastCalibrationDate = Timestamp.from(Instant.now());
     }
 
     public Timestamp getNextCalibrationDate() {

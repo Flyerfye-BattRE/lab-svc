@@ -16,7 +16,6 @@ import com.battre.stubs.services.RemoveStorageBatteryRequest;
 import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
-import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,7 +30,6 @@ import java.util.concurrent.BlockingQueue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,31 +68,19 @@ public class TesterResultProcessorTest {
     }
 
     public void mockUpdateBatteryStatus(UpdateBatteryStatusResponse response) {
-        doAnswer(invocation -> {
-            StreamObserver<UpdateBatteryStatusResponse> observer = invocation.getArgument(3);
-            observer.onNext(response);
-            observer.onCompleted();
-            return null;
-        }).when(grpcMethodInvoker).callMethod(
+        when(grpcMethodInvoker.invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
-        );
+                any(UpdateBatteryStatusRequest.class)
+        )).thenReturn(response);
     }
 
     public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
-        doAnswer(invocation -> {
-            StreamObserver<RemoveStorageBatteryResponse> observer = invocation.getArgument(3);
-            observer.onNext(response);
-            observer.onCompleted();
-            return null;
-        }).when(grpcMethodInvoker).callMethod(
+        when(grpcMethodInvoker.invokeNonblock(
                 eq("storagesvc"),
                 eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class),
-                any(StreamObserver.class)
-        );
+                any(RemoveStorageBatteryRequest.class)
+        )).thenReturn(response);
     }
 
     @Test
@@ -154,11 +140,10 @@ public class TesterResultProcessorTest {
 
         verify(refurbPlanRepo, times(1)).save(any(RefurbPlanType.class));
         verify(labPlansRepo, times(1)).setRefurbPlanForLabPlan(anyInt(), anyInt());
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
+                any(UpdateBatteryStatusRequest.class)
         );
     }
 
@@ -232,17 +217,15 @@ public class TesterResultProcessorTest {
         testerResultProcessor.processTesterResults();
 
         verify(labPlansRepo, times(1)).endLabPlan(eq(4), any(Timestamp.class));
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("opssvc"),
                 eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class),
-                any(StreamObserver.class)
+                any(UpdateBatteryStatusRequest.class)
         );
-        verify(grpcMethodInvoker, times(1)).callMethod(
+        verify(grpcMethodInvoker, times(1)).invokeNonblock(
                 eq("storagesvc"),
                 eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class),
-                any(StreamObserver.class)
+                any(RemoveStorageBatteryRequest.class)
         );
     }
 }

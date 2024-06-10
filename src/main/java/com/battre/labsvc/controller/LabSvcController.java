@@ -13,12 +13,12 @@ import com.battre.stubs.services.ChangeBatteryRefurbPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryRefurbPriorityResponse;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityResponse;
-import com.battre.stubs.services.GetLabPlanRequest;
-import com.battre.stubs.services.GetLabPlanResponse;
+import com.battre.stubs.services.GetLabPlansRequest;
+import com.battre.stubs.services.GetLabPlansResponse;
 import com.battre.stubs.services.GetRefurbMaintenanceLogsRequest;
 import com.battre.stubs.services.GetRefurbMaintenanceLogsResponse;
-import com.battre.stubs.services.GetRefurbPlanRequest;
-import com.battre.stubs.services.GetRefurbPlanResponse;
+import com.battre.stubs.services.GetRefurbPlansRequest;
+import com.battre.stubs.services.GetRefurbPlansResponse;
 import com.battre.stubs.services.GetTesterBacklogRequest;
 import com.battre.stubs.services.GetTesterBacklogResponse;
 import com.battre.stubs.services.GetTesterMaintenanceLogsRequest;
@@ -33,6 +33,7 @@ import com.battre.stubs.services.RemoveLabBatteryRequest;
 import com.battre.stubs.services.RemoveLabBatteryResponse;
 import com.battre.stubs.services.TesterBacklog;
 import com.battre.stubs.services.TesterStation;
+import com.google.protobuf.Int32Value;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -84,11 +85,11 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
 
     @Override
     public void getLabPlans(
-            GetLabPlanRequest request,
-            StreamObserver<GetLabPlanResponse> responseObserver) {
+            GetLabPlansRequest request,
+            StreamObserver<GetLabPlansResponse> responseObserver) {
         logger.info("getLabPlans() started");
 
-        GetLabPlanResponse response = buildGetLabPlanResponse(labSvc.getLabPlans());
+        GetLabPlansResponse response = buildGetLabPlansResponse(labSvc.getLabPlans());
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -98,11 +99,11 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
 
     @Override
     public void getCurrentLabPlans(
-            GetLabPlanRequest request,
-            StreamObserver<GetLabPlanResponse> responseObserver) {
+            GetLabPlansRequest request,
+            StreamObserver<GetLabPlansResponse> responseObserver) {
         logger.info("getCurrentLabPlans() started");
 
-        GetLabPlanResponse response = buildGetLabPlanResponse(labSvc.getCurrentLabPlans());
+        GetLabPlansResponse response = buildGetLabPlansResponse(labSvc.getCurrentLabPlans());
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -110,17 +111,22 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
         logger.info("getCurrentLabPlans() completed");
     }
 
-    private GetLabPlanResponse buildGetLabPlanResponse(List<LabPlanType> labPlans) {
-        GetLabPlanResponse.Builder responseBuilder = GetLabPlanResponse.newBuilder();
+    private GetLabPlansResponse buildGetLabPlansResponse(List<LabPlanType> labPlans) {
+        GetLabPlansResponse.Builder responseBuilder = GetLabPlansResponse.newBuilder();
         for (LabPlanType labPlan : labPlans) {
             LabPlanStatusEnum status = LabPlanStatusEnum.fromStatusCode(labPlan.getLabPlanStatusId());
 
             LabPlan.Builder labPlanBuilder = LabPlan.newBuilder()
                     .setLabPlanId(labPlan.getLabPlanId())
                     .setLabPlanStatus(status.getGrpcStatus())
-                    .setBatteryId(labPlan.getBatteryId())
-                    .setTesterRecordId(labPlan.getTesterRecordId())
-                    .setRefurbPlanId(labPlan.getRefurbPlanId());
+                    .setBatteryId(labPlan.getBatteryId());
+
+            if (labPlan.getTesterRecordId() != null) {
+                labPlanBuilder.setOptionalTesterRecordId(Int32Value.of(labPlan.getTesterRecordId()));
+            }
+            if (labPlan.getRefurbPlanId() != null) {
+                labPlanBuilder.setOptionalRefurbPlanId(Int32Value.of(labPlan.getRefurbPlanId()));
+            }
 
             responseBuilder.addLabPlanList(labPlanBuilder.build());
         }
@@ -171,11 +177,11 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
     }
 
     @Override
-    public void getCurrentRefurbPlans(GetRefurbPlanRequest request,
-                                      StreamObserver<GetRefurbPlanResponse> responseObserver) {
+    public void getCurrentRefurbPlans(GetRefurbPlansRequest request,
+                                      StreamObserver<GetRefurbPlansResponse> responseObserver) {
         logger.info("getCurrentRefurbPlans() started");
 
-        GetRefurbPlanResponse response = buildGetRefurbPlanResponse(labSvc.getCurrentRefurbPlans());
+        GetRefurbPlansResponse response = buildGetRefurbPlansResponse(labSvc.getCurrentRefurbPlans());
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -184,11 +190,11 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
     }
 
     @Override
-    public void getRefurbPlans(GetRefurbPlanRequest request,
-                               StreamObserver<GetRefurbPlanResponse> responseObserver) {
+    public void getRefurbPlans(GetRefurbPlansRequest request,
+                               StreamObserver<GetRefurbPlansResponse> responseObserver) {
         logger.info("getRefurbPlans() started");
 
-        GetRefurbPlanResponse response = buildGetRefurbPlanResponse(labSvc.getRefurbPlans());
+        GetRefurbPlansResponse response = buildGetRefurbPlansResponse(labSvc.getRefurbPlans());
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -196,8 +202,8 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
         logger.info("getRefurbPlans() completed");
     }
 
-    private GetRefurbPlanResponse buildGetRefurbPlanResponse(List<RefurbPlanType> refurbPlanList) {
-        GetRefurbPlanResponse.Builder responseBuilder = GetRefurbPlanResponse.newBuilder();
+    private GetRefurbPlansResponse buildGetRefurbPlansResponse(List<RefurbPlanType> refurbPlanList) {
+        GetRefurbPlansResponse.Builder responseBuilder = GetRefurbPlansResponse.newBuilder();
         for (RefurbPlanType planEntry : refurbPlanList) {
             RefurbPlan.Builder refurbPlanBuilder = RefurbPlan.newBuilder()
                     .setRefurbPlanId(planEntry.getRefurbPlanId())
@@ -207,13 +213,23 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
                     .setRefurbPlanEndDate(toTimestamp(planEntry.getRefurbPlanEndDate()))
                     .setAvailable(planEntry.isAvailable())
                     .setResolder(planEntry.getResolder())
-                    .setResolderRecordId(planEntry.getResolderRecordId())
                     .setRepack(planEntry.getRepack())
-                    .setRepackRecordId(planEntry.getRepackRecordId())
                     .setProcessorSwap(planEntry.getProcessorSwap())
-                    .setProcessorSwapRecordId(planEntry.getProcessorSwapRecordId())
-                    .setCapacitorSwap(planEntry.getCapacitorSwap())
-                    .setCapacitorSwapRecordId(planEntry.getCapacitorSwapRecordId());
+                    .setCapacitorSwap(planEntry.getCapacitorSwap());
+
+
+            if (planEntry.getResolderRecordId() != null) {
+                refurbPlanBuilder.setOptionalResolderRecordId(Int32Value.of(planEntry.getResolderRecordId()));
+            }
+            if (planEntry.getRepackRecordId() != null) {
+                refurbPlanBuilder.setOptionalRepackRecordId(Int32Value.of(planEntry.getRepackRecordId()));
+            }
+            if (planEntry.getProcessorSwapRecordId() != null) {
+                refurbPlanBuilder.setOptionalProcessorSwapRecordId(Int32Value.of(planEntry.getProcessorSwapRecordId()));
+            }
+            if (planEntry.getCapacitorSwapRecordId() != null) {
+                refurbPlanBuilder.setOptionalCapacitorSwapRecordId(Int32Value.of(planEntry.getCapacitorSwapRecordId()));
+            }
 
             responseBuilder.addRefurbPlanList(refurbPlanBuilder.build());
         }
@@ -268,10 +284,13 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
                     .setTesterStnId(testerStation.getTesterStnId())
                     .setTerminalLayoutId(testerStation.getTerminalLayoutId())
                     .setInUse(testerStation.isInUse())
-                    .setActiveBatteryId(testerStation.getActiveBatteryId())
                     .setLastActiveDate(toTimestamp(testerStation.getLastActiveDate()))
                     .setLastCalibrationDate(toTimestamp(testerStation.getLastCalibrationDate()))
                     .setNextCalibrationDate(toTimestamp(testerStation.getNextCalibrationDate()));
+
+            if (testerStation.getActiveBatteryId() != null) {
+                testerStationBuilder.setOptionalActiveBatteryId(Int32Value.of(testerStation.getActiveBatteryId()));
+            }
 
             responseBuilder.addTesterStationList(testerStationBuilder.build());
         }
@@ -298,10 +317,13 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
                     .setRefurbStnId(refurbStation.getRefurbStnId())
                     .setRefurbStationClass(refurbStnClassId.getGrpcClass())
                     .setInUse(refurbStation.isInUse())
-                    .setActiveBatteryId(refurbStation.getActiveBatteryId())
                     .setLastActiveDate(toTimestamp(refurbStation.getLastActiveDate()))
                     .setLastCalibrationDate(toTimestamp(refurbStation.getLastCalibrationDate()))
                     .setNextCalibrationDate(toTimestamp(refurbStation.getNextCalibrationDate()));
+
+            if (refurbStation.getActiveBatteryId() != null) {
+                refurbStationBuilder.setOptionalActiveBatteryId(Int32Value.of(refurbStation.getActiveBatteryId()));
+            }
 
             responseBuilder.addRefurbStationList(refurbStationBuilder.build());
         }
