@@ -138,7 +138,6 @@ public class TesterResultProcessor implements Runnable {
 
                 // Update lab plan with refurb plan id
                 labPlansRepo.setRefurbPlanForLabPlan(labPlans.get(0), savedRefurbPlan.getRefurbPlanId());
-                labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_NEW.toString());
                 labPlansRepo.setPlanStatusesForPlanId(labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_NEW.getStatusDescription());
 
                 // Call OpsSvc to update battery status to refurb
