@@ -125,12 +125,12 @@ public class LabSvcControllerTests {
     }
 
     @Test
-    void testGetTesterMaintenanceLogs() {
+    void testGetTesterStnInfo() {
         // TODO: Implement test
     }
 
     @Test
-    void testGetRefurbMaintenanceLogs() {
+    void testGetRefurbStnInfo() {
         // TODO: Implement test
     }
 

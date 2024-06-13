@@ -15,14 +15,14 @@ import com.battre.stubs.services.ChangeBatteryTesterPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityResponse;
 import com.battre.stubs.services.GetLabPlansRequest;
 import com.battre.stubs.services.GetLabPlansResponse;
-import com.battre.stubs.services.GetRefurbMaintenanceLogsRequest;
-import com.battre.stubs.services.GetRefurbMaintenanceLogsResponse;
+import com.battre.stubs.services.GetRefurbStnInfoRequest;
+import com.battre.stubs.services.GetRefurbStnInfoResponse;
 import com.battre.stubs.services.GetRefurbPlansRequest;
 import com.battre.stubs.services.GetRefurbPlansResponse;
 import com.battre.stubs.services.GetTesterBacklogRequest;
 import com.battre.stubs.services.GetTesterBacklogResponse;
-import com.battre.stubs.services.GetTesterMaintenanceLogsRequest;
-import com.battre.stubs.services.GetTesterMaintenanceLogsResponse;
+import com.battre.stubs.services.GetTesterStnInfoRequest;
+import com.battre.stubs.services.GetTesterStnInfoResponse;
 import com.battre.stubs.services.LabPlan;
 import com.battre.stubs.services.LabSvcGrpc;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
@@ -272,13 +272,13 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
     }
 
     @Override
-    public void getTesterMaintenanceLogs(GetTesterMaintenanceLogsRequest request,
-                                         StreamObserver<GetTesterMaintenanceLogsResponse> responseObserver) {
-        logger.info("getTesterMaintenanceLogs() started");
+    public void getTesterStnInfo(GetTesterStnInfoRequest request,
+                                         StreamObserver<GetTesterStnInfoResponse> responseObserver) {
+        logger.info("getTesterStnInfo() started");
 
         List<TesterStationType> testerStationList = labSvc.getTesterStationLogs();
 
-        GetTesterMaintenanceLogsResponse.Builder responseBuilder = GetTesterMaintenanceLogsResponse.newBuilder();
+        GetTesterStnInfoResponse.Builder responseBuilder = GetTesterStnInfoResponse.newBuilder();
         for (TesterStationType testerStation : testerStationList) {
             TesterStation.Builder testerStationBuilder = TesterStation.newBuilder()
                     .setTesterStnId(testerStation.getTesterStnId())
@@ -298,17 +298,17 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
         responseObserver.onNext(responseBuilder.build());
         responseObserver.onCompleted();
 
-        logger.info("getTesterMaintenanceLogs() completed");
+        logger.info("getTesterStnInfo() completed");
     }
 
     @Override
-    public void getRefurbMaintenanceLogs(GetRefurbMaintenanceLogsRequest request,
-                                         StreamObserver<GetRefurbMaintenanceLogsResponse> responseObserver) {
-        logger.info("getRefurbMaintenanceLogs() started");
+    public void getRefurbStnInfo(GetRefurbStnInfoRequest request,
+                                         StreamObserver<GetRefurbStnInfoResponse> responseObserver) {
+        logger.info("getRefurbStnInfo() started");
 
         List<RefurbStationType> refurbStationList = labSvc.getRefurbStationLogs();
 
-        GetRefurbMaintenanceLogsResponse.Builder responseBuilder = GetRefurbMaintenanceLogsResponse.newBuilder();
+        GetRefurbStnInfoResponse.Builder responseBuilder = GetRefurbStnInfoResponse.newBuilder();
         for (RefurbStationType refurbStation : refurbStationList) {
             RefurbStationClassEnum refurbStnClassId =
                     RefurbStationClassEnum.fromClassCode(refurbStation.getRefurbStationClassId());
@@ -331,7 +331,7 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
         responseObserver.onNext(responseBuilder.build());
         responseObserver.onCompleted();
 
-        logger.info("getRefurbMaintenanceLogs() completed");
+        logger.info("getRefurbStnInfo() completed");
     }
 
     @Override
