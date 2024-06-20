@@ -167,8 +167,11 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
                     .setTesterBacklogId(backlogEntry.getTesterBacklogId())
                     .setBatteryId(backlogEntry.getBatteryId())
                     .setTesterBacklogPriority(backlogEntry.getTesterBacklogPriority())
-                    .setTesterBacklogStartDate(toTimestamp(backlogEntry.getTesterBacklogStartDate()))
-                    .setTesterBacklogEndDate(toTimestamp(backlogEntry.getTesterBacklogEndDate()));
+                    .setTesterBacklogStartDate(toTimestamp(backlogEntry.getTesterBacklogStartDate()));
+
+            if (backlogEntry.getTesterBacklogEndDate() != null) {
+                testerBacklogBuilder.setTesterBacklogEndDate(toTimestamp(backlogEntry.getTesterBacklogEndDate()));
+            }
 
             responseBuilder.addTesterBacklogList(testerBacklogBuilder.build());
         }
@@ -210,14 +213,15 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
                     .setBatteryId(planEntry.getBatteryId())
                     .setRefurbPlanPriority(planEntry.getRefurbPlanPriority())
                     .setRefurbPlanStartDate(toTimestamp(planEntry.getRefurbPlanStartDate()))
-                    .setRefurbPlanEndDate(toTimestamp(planEntry.getRefurbPlanEndDate()))
                     .setAvailable(planEntry.isAvailable())
                     .setResolder(planEntry.getResolder())
                     .setRepack(planEntry.getRepack())
                     .setProcessorSwap(planEntry.getProcessorSwap())
                     .setCapacitorSwap(planEntry.getCapacitorSwap());
 
-
+            if (planEntry.getRefurbPlanEndDate() != null) {
+                refurbPlanBuilder.setRefurbPlanEndDate(toTimestamp(planEntry.getRefurbPlanEndDate()));
+            }
             if (planEntry.getResolderRecordId() != null) {
                 refurbPlanBuilder.setOptionalResolderRecordId(Int32Value.of(planEntry.getResolderRecordId()));
             }
