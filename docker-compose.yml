@@ -1,36 +1,10 @@
 version: '3'
 
-networks:
-  my_network:
-    external: true
-    driver: bridge
-
 services:
-  db:
-    image: postgres:16.2-alpine3.19
-    container_name: labsvc_postgres_db
-    ports:
-      - "5434:5432"
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - my_network
-
   labsvc:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "50040:50040"
-      - "50045:50045"
-    env_file:
-      - .env
-    depends_on:
-      - db
-    networks:
-      - my_network
-
-volumes:
-  postgres_data:
+      - "8080:8080"
+      - "80:80"

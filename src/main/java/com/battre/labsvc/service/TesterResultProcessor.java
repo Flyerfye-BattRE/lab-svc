@@ -185,7 +185,11 @@ public class TesterResultProcessor implements Runnable {
                 request
         );
 
-        return response.getSuccess();
+        if(response != null) {
+            return response.getSuccess();
+        } else {
+            return false;
+        }
     }
 
     private boolean updateStorageSvcRemoveBattery(int batteryId) {
@@ -218,6 +222,10 @@ public class TesterResultProcessor implements Runnable {
                 request
         );
 
-        return response.getSuccess();
+        if(response != null) {
+            return response.getSuccess();
+        } else {
+            return false;
+        }
     }
 }
