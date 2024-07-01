@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RefurbRecordsRepository extends JpaRepository<RefurbRecordType, Integer> {
-    // Custom database queries can be added here
+  // Custom database queries can be added here
 }

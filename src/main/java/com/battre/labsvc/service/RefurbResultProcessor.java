@@ -16,14 +16,13 @@ import com.battre.stubs.services.RemoveStorageBatteryRequest;
 import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RefurbResultProcessor implements Runnable {

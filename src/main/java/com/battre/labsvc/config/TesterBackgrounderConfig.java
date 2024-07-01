@@ -9,8 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Configuration
 public class TesterBackgrounderConfig {
-    @Bean
-    public BlockingQueue<TesterResultRecord> testerResultQueue() {
-        return new LinkedBlockingQueue<>();
-    }
+  @Bean
+  public BlockingQueue<TesterResultRecord> testerResultQueue() {
+    return new LinkedBlockingQueue<>();
+  }
 }

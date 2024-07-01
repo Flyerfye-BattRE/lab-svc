@@ -1,5 +1,13 @@
 package com.battre.labsvc.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.model.LabPlanType;
 import com.battre.labsvc.model.RefurbResultRecord;
@@ -14,23 +22,14 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class LabSvcTests {
     @Mock

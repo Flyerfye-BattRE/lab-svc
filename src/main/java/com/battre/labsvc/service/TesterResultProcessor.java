@@ -20,9 +20,6 @@ import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
 import io.grpc.stub.StreamObserver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -30,6 +27,8 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TesterResultProcessor implements Runnable {

@@ -1,20 +1,5 @@
 package com.battre.labsvc.service;
 
-import com.battre.labsvc.model.RefurbResultRecord;
-import com.battre.labsvc.repository.RefurbPlanRepository;
-import com.battre.labsvc.repository.RefurbStationRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationContext;
-
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,6 +7,20 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.battre.labsvc.model.RefurbResultRecord;
+import com.battre.labsvc.repository.RefurbPlanRepository;
+import com.battre.labsvc.repository.RefurbStationRepository;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
 public class RefurbBackgrounderTest {

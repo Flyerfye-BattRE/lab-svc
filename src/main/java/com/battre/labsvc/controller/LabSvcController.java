@@ -15,10 +15,10 @@ import com.battre.stubs.services.ChangeBatteryTesterPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityResponse;
 import com.battre.stubs.services.GetLabPlansRequest;
 import com.battre.stubs.services.GetLabPlansResponse;
-import com.battre.stubs.services.GetRefurbStnInfoRequest;
-import com.battre.stubs.services.GetRefurbStnInfoResponse;
 import com.battre.stubs.services.GetRefurbPlansRequest;
 import com.battre.stubs.services.GetRefurbPlansResponse;
+import com.battre.stubs.services.GetRefurbStnInfoRequest;
+import com.battre.stubs.services.GetRefurbStnInfoResponse;
 import com.battre.stubs.services.GetTesterBacklogRequest;
 import com.battre.stubs.services.GetTesterBacklogResponse;
 import com.battre.stubs.services.GetTesterStnInfoRequest;
@@ -36,12 +36,11 @@ import com.battre.stubs.services.TesterStation;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
+import java.util.logging.Logger;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.logging.Logger;
 
 @GrpcService
 public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {

@@ -1,20 +1,19 @@
 package com.battre.labsvc.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.battre.labsvc.service.LabSvc;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
 import com.battre.stubs.services.ProcessLabBatteriesResponse;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class LabSvcControllerTests {
     @Mock

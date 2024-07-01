@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class LabSvcApplicationTests {
-    @Test
-    void contextLoads() {
-    }
+  @Test
+  void contextLoads() {}
 }

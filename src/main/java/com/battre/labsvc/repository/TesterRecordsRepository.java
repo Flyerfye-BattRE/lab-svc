@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TesterRecordsRepository extends JpaRepository<TesterRecordType, Integer> {
-    // Custom database queries can be added here
+  // Custom database queries can be added here
 }

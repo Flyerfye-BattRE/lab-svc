@@ -1,7 +1,6 @@
 package com.battre.labsvc.model;
 
 import com.battre.labsvc.enums.RefurbStationClass;
-
 import java.sql.Timestamp;
 
 public record RefurbResultRecord(int refurbPlanId,

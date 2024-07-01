@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(name = "eureka.client.enabled", havingValue = "true", matchIfMissing = true)
 public class EurekaConfiguration {
-    // Eureka config mainly to disable it when running test code
+  // Eureka config mainly to disable it when running test code
 }

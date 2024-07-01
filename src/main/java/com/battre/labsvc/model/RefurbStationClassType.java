@@ -10,23 +10,23 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "RefurbStationClasses", schema = "LabSvcSchema")
 public class RefurbStationClassType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "refurb_station_class_id")
-    private Integer refurbStationClassId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "refurb_station_class_id")
+  private Integer refurbStationClassId;
 
-    @Column(name = "station_class", nullable = false, length = 45)
-    private String stationClass;
+  @Column(name = "station_class", nullable = false, length = 45)
+  private String stationClass;
 
-    public RefurbStationClassType() {
-        // Default constructor for Spring Data JPA
-    }
+  public RefurbStationClassType() {
+    // Default constructor for Spring Data JPA
+  }
 
-    public Integer getRefurbStationClassId() {
-        return refurbStationClassId;
-    }
+  public Integer getRefurbStationClassId() {
+    return refurbStationClassId;
+  }
 
-    public String getStationClass() {
-        return stationClass;
-    }
+  public String getStationClass() {
+    return stationClass;
+  }
 }

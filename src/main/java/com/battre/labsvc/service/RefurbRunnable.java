@@ -4,7 +4,6 @@ import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.RefurbResultRecord;
 import com.battre.labsvc.repository.RefurbStationRepository;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Random;

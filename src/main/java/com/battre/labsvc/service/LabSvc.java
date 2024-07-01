@@ -18,9 +18,6 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashSet;
@@ -32,6 +29,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LabSvc {
@@ -46,7 +45,6 @@ public class LabSvc {
     private final GrpcMethodInvoker grpcMethodInvoker;
     private final BlockingQueue<TesterResultRecord> testResultQueue;
     private final BlockingQueue<RefurbResultRecord> refurbResultQueue;
-
 
     @Autowired
     LabSvc(

@@ -5,12 +5,6 @@ import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.RefurbResultRecord;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -21,6 +15,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Scope("prototype")

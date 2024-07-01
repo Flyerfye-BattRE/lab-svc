@@ -13,72 +13,75 @@ import java.util.List;
 
 @Repository
 public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> {
-    // Used to update lab plan and validate that there is only one active lab plan per battery
-    // Leverages JPA built in query func
-    LabPlanType findByLabPlanId(int labPlanId);
+  // Used to update lab plan and validate that there is only one active lab plan per battery
+  // Leverages JPA built in query func
+  LabPlanType findByLabPlanId(int labPlanId);
 
-    LabPlanType findByRefurbPlanId(int refurbPlanId);
+  LabPlanType findByRefurbPlanId(int refurbPlanId);
 
-    LabPlanType findByBatteryId(int batteryId);
+  LabPlanType findByBatteryId(int batteryId);
 
-    @Query("SELECT labPlanId " +
-            "FROM LabPlanType " +
-            "WHERE batteryId = :batteryId AND labPlanEndDate IS NULL " +
-            "ORDER BY labPlanId DESC")
-    List<Integer> getLabPlanIdsForBatteryId(@Param("batteryId") int batteryId);
+  @Query(
+      "SELECT labPlanId "
+          + "FROM LabPlanType "
+          + "WHERE batteryId = :batteryId AND labPlanEndDate IS NULL "
+          + "ORDER BY labPlanId DESC")
+  List<Integer> getLabPlanIdsForBatteryId(@Param("batteryId") int batteryId);
 
-    @Query("SELECT lpt " +
-            "FROM LabPlanType AS lpt " +
-            "WHERE lpt.labPlanEndDate IS NULL " +
-            "ORDER BY labPlanId")
-    List<LabPlanType> getCurrentLabPlans();
+  @Query(
+      "SELECT lpt "
+          + "FROM LabPlanType AS lpt "
+          + "WHERE lpt.labPlanEndDate IS NULL "
+          + "ORDER BY labPlanId")
+  List<LabPlanType> getCurrentLabPlans();
 
-    @Query("SELECT lpt " +
-            "FROM LabPlanType AS lpt " +
-            "ORDER BY labPlanId " +
-            "LIMIT 1000")
-    List<LabPlanType> getLabPlans();
+  @Query("SELECT lpt " + "FROM LabPlanType AS lpt " + "ORDER BY labPlanId " + "LIMIT 1000")
+  List<LabPlanType> getLabPlans();
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE LabPlanType " +
-            "SET testerRecordId = :testerRecordId " +
-            "WHERE labPlanId = :labPlanId")
-    void setTesterRecordForLabPlan(@Param("labPlanId") int labPlanId, @Param("testerRecordId") int testerRecordId);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE LabPlanType "
+          + "SET testerRecordId = :testerRecordId "
+          + "WHERE labPlanId = :labPlanId")
+  void setTesterRecordForLabPlan(
+      @Param("labPlanId") int labPlanId, @Param("testerRecordId") int testerRecordId);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE LabPlanType " +
-            "SET refurbPlanId = :refurbPlanId " +
-            "WHERE labPlanId = :labPlanId")
-    void setRefurbPlanForLabPlan(@Param("labPlanId") int labPlanId, @Param("refurbPlanId") int refurbPlanId);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE LabPlanType " + "SET refurbPlanId = :refurbPlanId " + "WHERE labPlanId = :labPlanId")
+  void setRefurbPlanForLabPlan(
+      @Param("labPlanId") int labPlanId, @Param("refurbPlanId") int refurbPlanId);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE LabPlanType " +
-            "SET labPlanStatusId = (" +
-                "SELECT labPlanStatusId " +
-                "FROM LabPlanStatusType " +
-                "WHERE status = :planStatus" +
-            ") " +
-            "WHERE labPlanId = :labPlanId")
-    void setPlanStatusesForPlanId(@Param("labPlanId") int labPlanId,
-                                  @Param("planStatus") String planStatus);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE LabPlanType "
+          + "SET labPlanStatusId = ("
+          + "SELECT labPlanStatusId "
+          + "FROM LabPlanStatusType "
+          + "WHERE status = :planStatus"
+          + ") "
+          + "WHERE labPlanId = :labPlanId")
+  void setPlanStatusesForPlanId(
+      @Param("labPlanId") int labPlanId, @Param("planStatus") String planStatus);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE LabPlanType " +
-            "SET labPlanEndDate = :labPlanEndDate " +
-            "WHERE labPlanId = :labPlanId")
-    void endLabPlan(@Param("labPlanId") int labPlanId, @Param("labPlanEndDate") Timestamp labPlanEndDate);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE LabPlanType "
+          + "SET labPlanEndDate = :labPlanEndDate "
+          + "WHERE labPlanId = :labPlanId")
+  void endLabPlan(
+      @Param("labPlanId") int labPlanId, @Param("labPlanEndDate") Timestamp labPlanEndDate);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE LabPlanType " +
-            "SET labPlanEndDate = :labPlanEndDate " +
-            "WHERE refurbPlanId = :refurbPlanId")
-    void endLabPlanEntryForRefurbPlan(@Param("refurbPlanId") int refurbPlanId,
-                                      @Param("labPlanEndDate") Timestamp labPlanEndDate);
-
-
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE LabPlanType "
+          + "SET labPlanEndDate = :labPlanEndDate "
+          + "WHERE refurbPlanId = :refurbPlanId")
+  void endLabPlanEntryForRefurbPlan(
+      @Param("refurbPlanId") int refurbPlanId, @Param("labPlanEndDate") Timestamp labPlanEndDate);
 }

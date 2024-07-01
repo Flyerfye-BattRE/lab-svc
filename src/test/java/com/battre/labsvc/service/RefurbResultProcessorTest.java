@@ -1,5 +1,12 @@
 package com.battre.labsvc.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.battre.grpcifc.GrpcMethodInvoker;
 import com.battre.labsvc.enums.LabPlanStatusEnum;
 import com.battre.labsvc.enums.LabResult;
@@ -14,22 +21,14 @@ import com.battre.stubs.services.RemoveStorageBatteryRequest;
 import com.battre.stubs.services.RemoveStorageBatteryResponse;
 import com.battre.stubs.services.UpdateBatteryStatusRequest;
 import com.battre.stubs.services.UpdateBatteryStatusResponse;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class RefurbResultProcessorTest {
     @Mock

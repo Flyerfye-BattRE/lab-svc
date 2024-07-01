@@ -10,10 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface RefurbSchemesRepository extends JpaRepository<RefurbSchemeType, Integer> {
-    @Query("SELECT r " +
-            "FROM RefurbSchemeType r " +
-            "WHERE r.refurbSchemeId = :refurbSchemeId " +
-            "ORDER BY r.refurbSchemeId ASC " +
-            "LIMIT 1")
-    Optional<RefurbSchemeType> getDataForRefurbScheme(@Param("refurbSchemeId") int refurbSchemeId);
+  @Query(
+      "SELECT r "
+          + "FROM RefurbSchemeType r "
+          + "WHERE r.refurbSchemeId = :refurbSchemeId "
+          + "ORDER BY r.refurbSchemeId ASC "
+          + "LIMIT 1")
+  Optional<RefurbSchemeType> getDataForRefurbScheme(@Param("refurbSchemeId") int refurbSchemeId);
 }
