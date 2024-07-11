@@ -19,51 +19,51 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class RefurbStationRepositoryTest {
-    private static final Logger logger = Logger.getLogger(RefurbStationRepositoryTest.class.getName());
+  private static final Logger logger =
+      Logger.getLogger(RefurbStationRepositoryTest.class.getName());
 
-    @Autowired
-    private RefurbStationRepository refurbStationRepo;
+  @Autowired private RefurbStationRepository refurbStationRepo;
 
-    @Test
-    @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
-    public void testGetAvailableRefurbStns() {
-        List<Object[]> availStns = refurbStationRepo.getAvailableRefurbStns();
+  @Test
+  @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
+  public void testGetAvailableRefurbStns() {
+    List<Object[]> availStns = refurbStationRepo.getAvailableRefurbStns();
 
-        // Verify the result
-        // confirm refurb stations returned
-        assertNotNull(availStns);
-        assertEquals(1, availStns.size());
-        // returned fields are: refurbStnId, stationClass
-        int refurbStnId = (Integer) availStns.get(0)[0];
-        String stationClass = (String) availStns.get(0)[1];
-        assertEquals(2, refurbStnId);
-        assertEquals("CAPACITOR_SWAP", stationClass);
-    }
+    // Verify the result
+    // confirm refurb stations returned
+    assertNotNull(availStns);
+    assertEquals(1, availStns.size());
+    // returned fields are: refurbStnId, stationClass
+    int refurbStnId = (Integer) availStns.get(0)[0];
+    String stationClass = (String) availStns.get(0)[1];
+    assertEquals(2, refurbStnId);
+    assertEquals("CAPACITOR_SWAP", stationClass);
+  }
 
-    @Test
-    public void testGetRefurbStationLogs() {
-        // TODO: Implement test
-    }
+  @Test
+  public void testGetRefurbStationLogs() {
+    // TODO: Implement test
+  }
 
-    @Test
-    @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
-    public void testMarkRefurbStnInUse() {
-        Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
-        refurbStationRepo.markRefurbStnInUse(2, 3, date);
+  @Test
+  @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
+  public void testMarkRefurbStnInUse() {
+    Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
+    refurbStationRepo.markRefurbStnInUse(2, 3, date);
 
-        // Verify the result
-        RefurbStationType result = refurbStationRepo.findByRefurbStnId(2);
-        assertTrue(result.isInUse());
-    }
+    // Verify the result
+    RefurbStationType result = refurbStationRepo.findByRefurbStnId(2);
+    assertTrue(result.isInUse());
+  }
 
-    @Test
-    @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
-    public void testMarkRefurbStnFree() {
-        Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
-        refurbStationRepo.markRefurbStnFree(1, date);
+  @Test
+  @Sql(scripts = {"/testdb/test-rstr-populateRefurbStation.sql"})
+  public void testMarkRefurbStnFree() {
+    Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
+    refurbStationRepo.markRefurbStnFree(1, date);
 
-        // Verify the result
-        RefurbStationType result = refurbStationRepo.findByRefurbStnId(1);
-        assertFalse(result.isInUse());
-    }
+    // Verify the result
+    RefurbStationType result = refurbStationRepo.findByRefurbStnId(1);
+    assertFalse(result.isInUse());
+  }
 }

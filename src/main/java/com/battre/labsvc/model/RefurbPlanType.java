@@ -12,123 +12,130 @@ import java.time.Instant;
 @Entity
 @Table(name = "RefurbPlans", schema = "LabSvcSchema")
 public class RefurbPlanType {
-    @Column(name = "battery_id", nullable = false)
-    private final Integer batteryId;
-    @Column(name = "refurb_plan_priority", nullable = false)
-    private final Integer refurbPlanPriority;
-    @Column(name = "refurb_plan_start_date", nullable = false)
-    private final Timestamp refurbPlanStartDate;
-    @Column(name = "available")
-    private final Boolean available = true;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "refurb_plan_id")
-    private Integer refurbPlanId;
-    @Column(name = "refurb_plan_end_date")
-    private Timestamp refurbPlanEndDate;
-    @Column(name = "resolder")
-    private Boolean resolder = false;
+  @Column(name = "battery_id", nullable = false)
+  private final Integer batteryId;
 
-    @Column(name = "resolder_record_id")
-    private Integer resolderRecordId;
+  @Column(name = "refurb_plan_priority", nullable = false)
+  private final Integer refurbPlanPriority;
 
-    @Column(name = "repack")
-    private Boolean repack = false;
+  @Column(name = "refurb_plan_start_date", nullable = false)
+  private final Timestamp refurbPlanStartDate;
 
-    @Column(name = "repack_record_id")
-    private Integer repackRecordId;
+  @Column(name = "available")
+  private final Boolean available = true;
 
-    @Column(name = "processor_swap")
-    private Boolean processorSwap = false;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "refurb_plan_id")
+  private Integer refurbPlanId;
 
-    @Column(name = "processor_swap_record_id")
-    private Integer processorSwapRecordId;
+  @Column(name = "refurb_plan_end_date")
+  private Timestamp refurbPlanEndDate;
 
-    @Column(name = "capacitor_swap")
-    private Boolean capacitorSwap = false;
+  @Column(name = "resolder")
+  private Boolean resolder = false;
 
-    @Column(name = "capacitor_swap_record_id")
-    private Integer capacitorSwapRecordId;
+  @Column(name = "resolder_record_id")
+  private Integer resolderRecordId;
 
-    public RefurbPlanType() {
-        // Default constructor for Spring Data JPA
-        this.batteryId = -1;
-        this.refurbPlanPriority = 50;
-        this.refurbPlanStartDate = Timestamp.from(Instant.now());
-    }
+  @Column(name = "repack")
+  private Boolean repack = false;
 
-    public RefurbPlanType(Integer batteryId,
-                          Boolean resolder,
-                          Boolean repack,
-                          Boolean processorSwap,
-                          Boolean capacitorSwap) {
-        this.batteryId = batteryId;
-        this.refurbPlanPriority = 50;
-        this.refurbPlanStartDate = Timestamp.from(Instant.now());
-        this.resolder = resolder;
-        this.repack = repack;
-        this.processorSwap = processorSwap;
-        this.capacitorSwap = capacitorSwap;
-    }
+  @Column(name = "repack_record_id")
+  private Integer repackRecordId;
 
-    public Integer getRefurbPlanId() {
-        return refurbPlanId;
-    }
+  @Column(name = "processor_swap")
+  private Boolean processorSwap = false;
 
-    // added for testing purposes
-    public void setRefurbPlanId(Integer refurbPlanId) {
-        this.refurbPlanId = refurbPlanId;
-    }
+  @Column(name = "processor_swap_record_id")
+  private Integer processorSwapRecordId;
 
-    public Integer getBatteryId() {
-        return batteryId;
-    }
+  @Column(name = "capacitor_swap")
+  private Boolean capacitorSwap = false;
 
-    public Integer getRefurbPlanPriority() {
-        return refurbPlanPriority;
-    }
+  @Column(name = "capacitor_swap_record_id")
+  private Integer capacitorSwapRecordId;
 
-    public Timestamp getRefurbPlanStartDate() {
-        return refurbPlanStartDate;
-    }
+  public RefurbPlanType() {
+    // Default constructor for Spring Data JPA
+    this.batteryId = -1;
+    this.refurbPlanPriority = 50;
+    this.refurbPlanStartDate = Timestamp.from(Instant.now());
+  }
 
-    public Timestamp getRefurbPlanEndDate() {
-        return refurbPlanEndDate;
-    }
+  public RefurbPlanType(
+      Integer batteryId,
+      Boolean resolder,
+      Boolean repack,
+      Boolean processorSwap,
+      Boolean capacitorSwap) {
+    this.batteryId = batteryId;
+    this.refurbPlanPriority = 50;
+    this.refurbPlanStartDate = Timestamp.from(Instant.now());
+    this.resolder = resolder;
+    this.repack = repack;
+    this.processorSwap = processorSwap;
+    this.capacitorSwap = capacitorSwap;
+  }
 
-    public Boolean isAvailable() {
-        return available;
-    }
+  public Integer getRefurbPlanId() {
+    return refurbPlanId;
+  }
 
-    public Boolean getResolder() {
-        return resolder;
-    }
+  // added for testing purposes
+  public void setRefurbPlanId(Integer refurbPlanId) {
+    this.refurbPlanId = refurbPlanId;
+  }
 
-    public Integer getResolderRecordId() {
-        return resolderRecordId;
-    }
+  public Integer getBatteryId() {
+    return batteryId;
+  }
 
-    public Boolean getRepack() {
-        return repack;
-    }
+  public Integer getRefurbPlanPriority() {
+    return refurbPlanPriority;
+  }
 
-    public Integer getRepackRecordId() {
-        return repackRecordId;
-    }
+  public Timestamp getRefurbPlanStartDate() {
+    return refurbPlanStartDate;
+  }
 
-    public Boolean getProcessorSwap() {
-        return processorSwap;
-    }
+  public Timestamp getRefurbPlanEndDate() {
+    return refurbPlanEndDate;
+  }
 
-    public Integer getProcessorSwapRecordId() {
-        return processorSwapRecordId;
-    }
+  public Boolean isAvailable() {
+    return available;
+  }
 
-    public Boolean getCapacitorSwap() {
-        return capacitorSwap;
-    }
+  public Boolean getResolder() {
+    return resolder;
+  }
 
-    public Integer getCapacitorSwapRecordId() {
-        return capacitorSwapRecordId;
-    }
+  public Integer getResolderRecordId() {
+    return resolderRecordId;
+  }
+
+  public Boolean getRepack() {
+    return repack;
+  }
+
+  public Integer getRepackRecordId() {
+    return repackRecordId;
+  }
+
+  public Boolean getProcessorSwap() {
+    return processorSwap;
+  }
+
+  public Integer getProcessorSwapRecordId() {
+    return processorSwapRecordId;
+  }
+
+  public Boolean getCapacitorSwap() {
+    return capacitorSwap;
+  }
+
+  public Integer getCapacitorSwapRecordId() {
+    return capacitorSwapRecordId;
+  }
 }

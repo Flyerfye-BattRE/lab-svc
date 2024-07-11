@@ -15,6 +15,7 @@
     <description>Lab service for BattRe app</description>
     <properties>
         <java.version>17</java.version>
+        <spring-boot.version>3.2.5</spring-boot.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <awssdk.version>2.26.7</awssdk.version>
     </properties>
@@ -24,19 +25,22 @@
             <groupId>net.devh</groupId>
             <artifactId>grpc-spring-boot-starter</artifactId>
             <version>3.0.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>servicediscovery</artifactId>
+			<!-- <version>${awssdk.version}</version>-->
         </dependency>
         <dependency>
             <groupId>com.battre</groupId>
             <artifactId>grpc-ifc</artifactId>
-            <version>v0.1.8</version>
+            <version>v0.1.9</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -46,17 +50,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <!-- <version>${spring-boot.version}</version>-->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+            <!-- <version>${spring-boot.version}</version>-->
         </dependency>
 
         <!-- Used for testing-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+			<version>2.1.210</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <!-- <version>${spring-boot.version}</version>-->
             <scope>test</scope>
         </dependency>
 
@@ -95,6 +107,13 @@
 
     <dependencyManagement>
         <dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>

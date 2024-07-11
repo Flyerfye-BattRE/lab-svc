@@ -3,7 +3,6 @@ package com.battre.labsvc.service;
 import com.battre.labsvc.enums.LabResult;
 import com.battre.labsvc.model.TesterResultRecord;
 import com.battre.labsvc.repository.TesterStationRepository;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Random;

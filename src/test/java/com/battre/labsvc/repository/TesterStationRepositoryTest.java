@@ -17,49 +17,48 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class TesterStationRepositoryTest {
-    private static final Logger logger = Logger.getLogger(TesterStationRepositoryTest.class.getName());
+  private static final Logger logger =
+      Logger.getLogger(TesterStationRepositoryTest.class.getName());
 
-    @Autowired
-    private TesterStationRepository testerStationRepo;
+  @Autowired private TesterStationRepository testerStationRepo;
 
-    @Test
-    @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
-    public void testGetAvailableTesterStations() {
-        List<TesterStationType> availStns = testerStationRepo.getAvailableTesterStations();
+  @Test
+  @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
+  public void testGetAvailableTesterStations() {
+    List<TesterStationType> availStns = testerStationRepo.getAvailableTesterStations();
 
-        // Verify the result
-        // confirm tester stations returned
-        assertNotNull(availStns);
-        assertEquals(1, availStns.size());
-        assertEquals(2, availStns.get(0).getTesterStnId());
-        assertEquals(6, availStns.get(0).getTerminalLayoutId());
-    }
+    // Verify the result
+    // confirm tester stations returned
+    assertNotNull(availStns);
+    assertEquals(1, availStns.size());
+    assertEquals(2, availStns.get(0).getTesterStnId());
+    assertEquals(6, availStns.get(0).getTerminalLayoutId());
+  }
 
-    @Test
-    public void testGetTesterStationLogs() {
-        // TODO: Implement test
-    }
+  @Test
+  public void testGetTesterStationLogs() {
+    // TODO: Implement test
+  }
 
-    @Test
-    @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
-    public void testMarkTesterInUse() {
-        Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
-        testerStationRepo.markTesterInUse(2, 3, date);
+  @Test
+  @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
+  public void testMarkTesterInUse() {
+    Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
+    testerStationRepo.markTesterInUse(2, 3, date);
 
-        // Verify the result
-        TesterStationType result = testerStationRepo.findByTesterStnId(2);
-        assertEquals(true, result.isInUse());
+    // Verify the result
+    TesterStationType result = testerStationRepo.findByTesterStnId(2);
+    assertEquals(true, result.isInUse());
+  }
 
-    }
+  @Test
+  @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
+  public void testMarkTesterFree() {
+    Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
+    testerStationRepo.markTesterFree(1, date);
 
-    @Test
-    @Sql(scripts = {"/testdb/test-tstr-populateTesterStation.sql"})
-    public void testMarkTesterFree() {
-        Timestamp date = Timestamp.valueOf("2024-05-10 12:00:00");
-        testerStationRepo.markTesterFree(1, date);
-
-        // Verify the result
-        TesterStationType result = testerStationRepo.findByTesterStnId(1);
-        assertEquals(false, result.isInUse());
-    }
+    // Verify the result
+    TesterStationType result = testerStationRepo.findByTesterStnId(1);
+    assertEquals(false, result.isInUse());
+  }
 }

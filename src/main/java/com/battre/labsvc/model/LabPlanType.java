@@ -13,88 +13,88 @@ import java.time.Instant;
 @Entity
 @Table(name = "LabPlans", schema = "LabSvcSchema")
 public class LabPlanType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lab_plan_id")
-    private int labPlanId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "lab_plan_id")
+  private int labPlanId;
 
-    @Column(name = "lab_plan_status_id")
-    private int labPlanStatusId;
+  @Column(name = "lab_plan_status_id")
+  private int labPlanStatusId;
 
-    @Column(name = "lab_plan_start_date")
-    private Timestamp labPlanStartDate;
+  @Column(name = "lab_plan_start_date")
+  private Timestamp labPlanStartDate;
 
-    @Column(name = "lab_plan_end_date")
-    private Timestamp labPlanEndDate;
+  @Column(name = "lab_plan_end_date")
+  private Timestamp labPlanEndDate;
 
-    @Column(name = "battery_id")
-    private int batteryId;
+  @Column(name = "battery_id")
+  private int batteryId;
 
-    @Column(name = "tester_record_id")
-    private Integer testerRecordId;
+  @Column(name = "tester_record_id")
+  private Integer testerRecordId;
 
-    @Column(name = "refurb_plan_id")
-    private Integer refurbPlanId;
+  @Column(name = "refurb_plan_id")
+  private Integer refurbPlanId;
 
-    public LabPlanType() {
-        // Default constructor for Spring Data JPA
-    }
+  public LabPlanType() {
+    // Default constructor for Spring Data JPA
+  }
 
-    public LabPlanType(int batteryId) {
-        this.batteryId = batteryId;
-        this.labPlanStatusId = LabPlanStatusEnum.TESTER_BACKLOG_NEW.getStatusCode();
-        this.labPlanStartDate = Timestamp.from(Instant.now());
-    }
+  public LabPlanType(int batteryId) {
+    this.batteryId = batteryId;
+    this.labPlanStatusId = LabPlanStatusEnum.TESTER_BACKLOG_NEW.getStatusCode();
+    this.labPlanStartDate = Timestamp.from(Instant.now());
+  }
 
-    public int getLabPlanId() {
-        return labPlanId;
-    }
+  public int getLabPlanId() {
+    return labPlanId;
+  }
 
-    public int getLabPlanStatusId() {
-        return labPlanStatusId;
-    }
+  public int getLabPlanStatusId() {
+    return labPlanStatusId;
+  }
 
-    public void setLabPlanStatusId(int labPlanStatusId) {
-        this.labPlanStatusId = labPlanStatusId;
-    }
+  public void setLabPlanStatusId(int labPlanStatusId) {
+    this.labPlanStatusId = labPlanStatusId;
+  }
 
-    public Timestamp getLabPlanStartDate() {
-        return labPlanStartDate;
-    }
+  public Timestamp getLabPlanStartDate() {
+    return labPlanStartDate;
+  }
 
-    public void setLabPlanStartDate(Timestamp labPlanStartDate) {
-        this.labPlanStartDate = labPlanStartDate;
-    }
+  public void setLabPlanStartDate(Timestamp labPlanStartDate) {
+    this.labPlanStartDate = labPlanStartDate;
+  }
 
-    public Timestamp getLabPlanEndDate() {
-        return labPlanEndDate;
-    }
+  public Timestamp getLabPlanEndDate() {
+    return labPlanEndDate;
+  }
 
-    public void setLabPlanEndDate(Timestamp labPlanEndDate) {
-        this.labPlanEndDate = labPlanEndDate;
-    }
+  public void setLabPlanEndDate(Timestamp labPlanEndDate) {
+    this.labPlanEndDate = labPlanEndDate;
+  }
 
-    public int getBatteryId() {
-        return batteryId;
-    }
+  public int getBatteryId() {
+    return batteryId;
+  }
 
-    public void setBatteryId(int batteryId) {
-        this.batteryId = batteryId;
-    }
+  public void setBatteryId(int batteryId) {
+    this.batteryId = batteryId;
+  }
 
-    public Integer getTesterRecordId() {
-        return testerRecordId;
-    }
+  public Integer getTesterRecordId() {
+    return testerRecordId;
+  }
 
-    public void setTesterRecordId(Integer testerRecordId) {
-        this.testerRecordId = testerRecordId;
-    }
+  public void setTesterRecordId(Integer testerRecordId) {
+    this.testerRecordId = testerRecordId;
+  }
 
-    public Integer getRefurbPlanId() {
-        return refurbPlanId;
-    }
+  public Integer getRefurbPlanId() {
+    return refurbPlanId;
+  }
 
-    public void setRefurbPlanId(Integer refurbPlanId) {
-        this.refurbPlanId = refurbPlanId;
-    }
+  public void setRefurbPlanId(Integer refurbPlanId) {
+    this.refurbPlanId = refurbPlanId;
+  }
 }

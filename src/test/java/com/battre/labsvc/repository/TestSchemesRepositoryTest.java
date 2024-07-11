@@ -15,20 +15,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class TestSchemesRepositoryTest {
-    private static final Logger logger = Logger.getLogger(TestSchemesRepositoryTest.class.getName());
+  private static final Logger logger = Logger.getLogger(TestSchemesRepositoryTest.class.getName());
 
-    @Autowired
-    private TestSchemesRepository testSchemesRepo;
+  @Autowired private TestSchemesRepository testSchemesRepo;
 
-    @Test
-    public void testGetDataForTestScheme() {
-        Optional<TestSchemeType> result = testSchemesRepo.getDataForTestScheme(6);
+  @Test
+  public void testGetDataForTestScheme() {
+    Optional<TestSchemeType> result = testSchemesRepo.getDataForTestScheme(6);
 
-        // Verify the result
-        assertFalse(result.get().isCheckerboard());
-        assertTrue(result.get().isNullLine());
-        assertFalse(result.get().isVaporSim());
-        assertTrue(result.get().isBlackout());
-        assertFalse(result.get().isOvenScreen());
-    }
+    // Verify the result
+    assertFalse(result.get().isCheckerboard());
+    assertTrue(result.get().isNullLine());
+    assertFalse(result.get().isVaporSim());
+    assertTrue(result.get().isBlackout());
+    assertFalse(result.get().isOvenScreen());
+  }
 }

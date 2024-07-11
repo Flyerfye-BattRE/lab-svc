@@ -9,12 +9,17 @@ import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.model.TesterStationType;
 import com.battre.labsvc.service.LabSvc;
 import com.battre.stubs.services.BatteryIdType;
+import com.battre.stubs.services.BatteryStatusCount;
 import com.battre.stubs.services.ChangeBatteryRefurbPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryRefurbPriorityResponse;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityRequest;
 import com.battre.stubs.services.ChangeBatteryTesterPriorityResponse;
+import com.battre.stubs.services.GetLabPlanStatusCountsRequest;
+import com.battre.stubs.services.GetLabPlanStatusCountsResponse;
 import com.battre.stubs.services.GetLabPlansRequest;
 import com.battre.stubs.services.GetLabPlansResponse;
+import com.battre.stubs.services.GetOpsSvcOverviewRequest;
+import com.battre.stubs.services.GetOpsSvcOverviewResponse;
 import com.battre.stubs.services.GetRefurbPlansRequest;
 import com.battre.stubs.services.GetRefurbPlansResponse;
 import com.battre.stubs.services.GetRefurbStnInfoRequest;
@@ -24,6 +29,7 @@ import com.battre.stubs.services.GetTesterBacklogResponse;
 import com.battre.stubs.services.GetTesterStnInfoRequest;
 import com.battre.stubs.services.GetTesterStnInfoResponse;
 import com.battre.stubs.services.LabPlan;
+import com.battre.stubs.services.LabPlanStatusCount;
 import com.battre.stubs.services.LabSvcGrpc;
 import com.battre.stubs.services.ProcessLabBatteriesRequest;
 import com.battre.stubs.services.ProcessLabBatteriesResponse;
@@ -352,5 +358,31 @@ public class LabSvcController extends LabSvcGrpc.LabSvcImplBase {
         responseObserver.onCompleted();
 
         logger.info("removeLabBattery() completed");
+    }
+
+    @Override
+    public void getLabPlanStatusCounts(
+            GetLabPlanStatusCountsRequest request,
+            StreamObserver<GetLabPlanStatusCountsResponse> responseObserver) {
+        logger.info("getLabPlanStatusCounts() started");
+
+        List<LabPlanStatusCount> labPlanStatusCountsList = labSvc.getLabPlanStatusCounts();
+
+        GetLabPlanStatusCountsResponse.Builder responseBuilder = GetLabPlanStatusCountsResponse.newBuilder();
+
+        for (LabPlanStatusCount labPlanStatusCount : labPlanStatusCountsList) {
+            LabPlanStatusCount.Builder labPlanStatusCountBuilder =
+                    LabPlanStatusCount.newBuilder()
+                            .setLabPlanStatus(labPlanStatusCount.getLabPlanStatus())
+                            .setCount(labPlanStatusCount.getCount());
+
+            responseBuilder.addLabPlanStatusCountList(labPlanStatusCountBuilder.build());
+        }
+
+        GetLabPlanStatusCountsResponse response = responseBuilder.build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+
+        logger.info("getLabPlanStatusCounts() completed");
     }
 }

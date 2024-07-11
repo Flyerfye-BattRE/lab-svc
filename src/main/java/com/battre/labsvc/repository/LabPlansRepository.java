@@ -38,6 +38,12 @@ public interface LabPlansRepository extends JpaRepository<LabPlanType, Integer> 
   @Query("SELECT lpt " + "FROM LabPlanType AS lpt " + "ORDER BY labPlanId " + "LIMIT 1000")
   List<LabPlanType> getLabPlans();
 
+  @Query("SELECT lpst.status, COUNT(lpt.labPlanId) AS planCount "
+          + "FROM LabPlanType lpt "
+          + "JOIN LabPlanStatusType lpst ON lpt.labPlanStatusId = lpst.labPlanStatusId "
+          + "GROUP BY lpst.status")
+  List<Object[]>  getLabPlanStatusCounts();
+
   @Transactional
   @Modifying
   @Query(

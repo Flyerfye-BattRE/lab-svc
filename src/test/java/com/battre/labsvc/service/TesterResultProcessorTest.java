@@ -35,196 +35,178 @@ import org.mockito.MockitoAnnotations;
 
 public class TesterResultProcessorTest {
 
-    @Mock
-    private LabPlansRepository labPlansRepo;
-    @Mock
-    private RefurbPlanRepository refurbPlanRepo;
-    @Mock
-    private TesterBacklogRepository testerBacklogRepo;
-    @Mock
-    private TesterRecordsRepository testerRecordsRepo;
-    @Mock
-    private RefurbSchemesRepository refurbSchemesRepo;
-    @Mock
-    private BlockingQueue<TesterResultRecord> resultQueue;
-    @Mock
-    private GrpcMethodInvoker grpcMethodInvoker;
-    @InjectMocks
-    private TesterResultProcessor testerResultProcessor;
+  @Mock private LabPlansRepository labPlansRepo;
+  @Mock private RefurbPlanRepository refurbPlanRepo;
+  @Mock private TesterBacklogRepository testerBacklogRepo;
+  @Mock private TesterRecordsRepository testerRecordsRepo;
+  @Mock private RefurbSchemesRepository refurbSchemesRepo;
+  @Mock private BlockingQueue<TesterResultRecord> resultQueue;
+  @Mock private GrpcMethodInvoker grpcMethodInvoker;
+  @InjectMocks private TesterResultProcessor testerResultProcessor;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        testerResultProcessor = new TesterResultProcessor(
-                labPlansRepo,
-                refurbPlanRepo,
-                testerBacklogRepo,
-                testerRecordsRepo,
-                refurbSchemesRepo,
-                grpcMethodInvoker,
-                resultQueue
-        );
-    }
+  @BeforeEach
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+    testerResultProcessor =
+        new TesterResultProcessor(
+            labPlansRepo,
+            refurbPlanRepo,
+            testerBacklogRepo,
+            testerRecordsRepo,
+            refurbSchemesRepo,
+            grpcMethodInvoker,
+            resultQueue);
+  }
 
-    public void mockUpdateBatteryStatus(UpdateBatteryStatusResponse response) {
-        when(grpcMethodInvoker.invokeNonblock(
-                eq("opssvc"),
-                eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class)
-        )).thenReturn(response);
-    }
+  public void mockUpdateBatteryStatus(UpdateBatteryStatusResponse response) {
+    when(grpcMethodInvoker.invokeNonblock(
+            eq("opssvc"), eq("updateBatteryStatus"), any(UpdateBatteryStatusRequest.class)))
+        .thenReturn(response);
+  }
 
-    public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
-        when(grpcMethodInvoker.invokeNonblock(
-                eq("storagesvc"),
-                eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class)
-        )).thenReturn(response);
-    }
+  public void mockUpdateStorageSvcRemoveBattery(RemoveStorageBatteryResponse response) {
+    when(grpcMethodInvoker.invokeNonblock(
+            eq("storagesvc"), eq("removeStorageBattery"), any(RemoveStorageBatteryRequest.class)))
+        .thenReturn(response);
+  }
 
-    @Test
-    public void testProcessTesterResults_Pass() throws InterruptedException {
-        TesterResultRecord resultRecord = new TesterResultRecord(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                2,  // terminalLayoutId
-                LabResult.PASS.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        when(resultQueue.take()).thenReturn(resultRecord);
+  @Test
+  public void testProcessTesterResults_Pass() throws InterruptedException {
+    TesterResultRecord resultRecord =
+        new TesterResultRecord(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            2, // terminalLayoutId
+            LabResult.PASS.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    when(resultQueue.take()).thenReturn(resultRecord);
 
-        TesterRecordType testerRecord = new TesterRecordType(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                LabResult.PASS.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        testerRecord.setTesterRecordId(5);
-        when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
+    TesterRecordType testerRecord =
+        new TesterRecordType(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            LabResult.PASS.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    testerRecord.setTesterRecordId(5);
+    when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
 
-        List<Integer> mockPlans = List.of(4);
-        when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
+    List<Integer> mockPlans = List.of(4);
+    when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
 
-        Optional<RefurbSchemeType> refurbSchemeDataResponse = Optional.of(new RefurbSchemeType(
-                5,
-                false,
-                true,
-                false,
-                true
-        ));
-        when(refurbSchemesRepo.getDataForRefurbScheme(5)).thenReturn(refurbSchemeDataResponse);
+    Optional<RefurbSchemeType> refurbSchemeDataResponse =
+        Optional.of(new RefurbSchemeType(5, false, true, false, true));
+    when(refurbSchemesRepo.getDataForRefurbScheme(5)).thenReturn(refurbSchemeDataResponse);
 
-        RefurbPlanType refurbPlan = new RefurbPlanType(
-                3,  // batteryId
-                true,  // resolder
-                true,  // repack
-                true,  // processorSwap
-                true  // capacitorSwap
-        );
-        refurbPlan.setRefurbPlanId(5);
-        when(refurbPlanRepo.save(any(RefurbPlanType.class))).thenReturn(refurbPlan);
+    RefurbPlanType refurbPlan =
+        new RefurbPlanType(
+            3, // batteryId
+            true, // resolder
+            true, // repack
+            true, // processorSwap
+            true // capacitorSwap
+            );
+    refurbPlan.setRefurbPlanId(5);
+    when(refurbPlanRepo.save(any(RefurbPlanType.class))).thenReturn(refurbPlan);
 
-        UpdateBatteryStatusResponse response =
-                UpdateBatteryStatusResponse.newBuilder().build();
-        mockUpdateBatteryStatus(response);
+    UpdateBatteryStatusResponse response = UpdateBatteryStatusResponse.newBuilder().build();
+    mockUpdateBatteryStatus(response);
 
-        testerResultProcessor.processTesterResults();
+    testerResultProcessor.processTesterResults();
 
-        verify(testerRecordsRepo, times(1)).save(any(TesterRecordType.class));
-        verify(labPlansRepo, times(1)).setTesterRecordForLabPlan(4, 5);
+    verify(testerRecordsRepo, times(1)).save(any(TesterRecordType.class));
+    verify(labPlansRepo, times(1)).setTesterRecordForLabPlan(4, 5);
 
-        verify(refurbPlanRepo, times(1)).save(any(RefurbPlanType.class));
-        verify(labPlansRepo, times(1)).setRefurbPlanForLabPlan(anyInt(), anyInt());
-        verify(grpcMethodInvoker, times(1)).invokeNonblock(
-                eq("opssvc"),
-                eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class)
-        );
-    }
+    verify(refurbPlanRepo, times(1)).save(any(RefurbPlanType.class));
+    verify(labPlansRepo, times(1)).setRefurbPlanForLabPlan(anyInt(), anyInt());
+    verify(grpcMethodInvoker, times(1))
+        .invokeNonblock(
+            eq("opssvc"), eq("updateBatteryStatus"), any(UpdateBatteryStatusRequest.class));
+  }
 
-    @Test
-    public void testProcessTesterResults_FailRetry() throws InterruptedException {
-        TesterResultRecord resultRecord = new TesterResultRecord(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                2,  // terminalLayoutId
-                LabResult.FAIL_RETRY.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        when(resultQueue.take()).thenReturn(resultRecord);
+  @Test
+  public void testProcessTesterResults_FailRetry() throws InterruptedException {
+    TesterResultRecord resultRecord =
+        new TesterResultRecord(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            2, // terminalLayoutId
+            LabResult.FAIL_RETRY.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    when(resultQueue.take()).thenReturn(resultRecord);
 
-        TesterRecordType testerRecord = new TesterRecordType(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                LabResult.FAIL_RETRY.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        testerRecord.setTesterRecordId(5);
-        when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
+    TesterRecordType testerRecord =
+        new TesterRecordType(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            LabResult.FAIL_RETRY.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    testerRecord.setTesterRecordId(5);
+    when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
 
-        List<Integer> mockPlans = List.of(4);
-        when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
+    List<Integer> mockPlans = List.of(4);
+    when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
 
-        testerResultProcessor.processTesterResults();
+    testerResultProcessor.processTesterResults();
 
-        verify(testerBacklogRepo, times(1)).save(any(TesterBacklogType.class));
-    }
+    verify(testerBacklogRepo, times(1)).save(any(TesterBacklogType.class));
+  }
 
-    @Test
-    public void testProcessTesterResults_FailReject() throws InterruptedException {
-        TesterResultRecord resultRecord = new TesterResultRecord(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                2,  // terminalLayoutId
-                LabResult.FAIL_REJECT.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        when(resultQueue.take()).thenReturn(resultRecord);
+  @Test
+  public void testProcessTesterResults_FailReject() throws InterruptedException {
+    TesterResultRecord resultRecord =
+        new TesterResultRecord(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            2, // terminalLayoutId
+            LabResult.FAIL_REJECT.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    when(resultQueue.take()).thenReturn(resultRecord);
 
-        TesterRecordType testerRecord = new TesterRecordType(
-                1,  // testerStnId
-                3,  // batteryId
-                4,  // testSchemeId
-                5,  // refurbSchemeId
-                LabResult.FAIL_REJECT.getStatusCode(),  // resultTypeId
-                Timestamp.valueOf("2024-05-10 12:00:00")  // testDate
-        );
-        testerRecord.setTesterRecordId(5);
-        when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
+    TesterRecordType testerRecord =
+        new TesterRecordType(
+            1, // testerStnId
+            3, // batteryId
+            4, // testSchemeId
+            5, // refurbSchemeId
+            LabResult.FAIL_REJECT.getStatusCode(), // resultTypeId
+            Timestamp.valueOf("2024-05-10 12:00:00") // testDate
+            );
+    testerRecord.setTesterRecordId(5);
+    when(testerRecordsRepo.save(any(TesterRecordType.class))).thenReturn(testerRecord);
 
-        List<Integer> mockPlans = List.of(4);
-        when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
+    List<Integer> mockPlans = List.of(4);
+    when(labPlansRepo.getLabPlanIdsForBatteryId(3)).thenReturn(mockPlans);
 
-        UpdateBatteryStatusResponse response =
-                UpdateBatteryStatusResponse.newBuilder().build();
-        mockUpdateBatteryStatus(response);
+    UpdateBatteryStatusResponse response = UpdateBatteryStatusResponse.newBuilder().build();
+    mockUpdateBatteryStatus(response);
 
-        RemoveStorageBatteryResponse storageSvcResponse =
-                RemoveStorageBatteryResponse.newBuilder().build();
-        mockUpdateStorageSvcRemoveBattery(storageSvcResponse);
+    RemoveStorageBatteryResponse storageSvcResponse =
+        RemoveStorageBatteryResponse.newBuilder().build();
+    mockUpdateStorageSvcRemoveBattery(storageSvcResponse);
 
-        testerResultProcessor.processTesterResults();
+    testerResultProcessor.processTesterResults();
 
-        verify(labPlansRepo, times(1)).endLabPlan(eq(4), any(Timestamp.class));
-        verify(grpcMethodInvoker, times(1)).invokeNonblock(
-                eq("opssvc"),
-                eq("updateBatteryStatus"),
-                any(UpdateBatteryStatusRequest.class)
-        );
-        verify(grpcMethodInvoker, times(1)).invokeNonblock(
-                eq("storagesvc"),
-                eq("removeStorageBattery"),
-                any(RemoveStorageBatteryRequest.class)
-        );
-    }
+    verify(labPlansRepo, times(1)).endLabPlan(eq(4), any(Timestamp.class));
+    verify(grpcMethodInvoker, times(1))
+        .invokeNonblock(
+            eq("opssvc"), eq("updateBatteryStatus"), any(UpdateBatteryStatusRequest.class));
+    verify(grpcMethodInvoker, times(1))
+        .invokeNonblock(
+            eq("storagesvc"), eq("removeStorageBattery"), any(RemoveStorageBatteryRequest.class));
+  }
 }

@@ -16,20 +16,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class RefurbSchemesRepositoryTest {
-    private static final Logger logger = Logger.getLogger(RefurbSchemesRepositoryTest.class.getName());
+  private static final Logger logger =
+      Logger.getLogger(RefurbSchemesRepositoryTest.class.getName());
 
-    @Autowired
-    private RefurbSchemesRepository refurbSchemesRepo;
+  @Autowired private RefurbSchemesRepository refurbSchemesRepo;
 
-    @Test
-    @Sql(scripts = {"/testdb/test-rscr-populateRefurbSchemes.sql"})
-    public void testGetDataForRefurbScheme() {
-        Optional<RefurbSchemeType> result = refurbSchemesRepo.getDataForRefurbScheme(2);
+  @Test
+  @Sql(scripts = {"/testdb/test-rscr-populateRefurbSchemes.sql"})
+  public void testGetDataForRefurbScheme() {
+    Optional<RefurbSchemeType> result = refurbSchemesRepo.getDataForRefurbScheme(2);
 
-        // Verify the result
-        assertFalse(result.get().isResolder());
-        assertTrue(result.get().isRepack());
-        assertFalse(result.get().isProcessorSwap());
-        assertTrue(result.get().isCapacitorSwap());
-    }
+    // Verify the result
+    assertFalse(result.get().isResolder());
+    assertTrue(result.get().isRepack());
+    assertFalse(result.get().isProcessorSwap());
+    assertTrue(result.get().isCapacitorSwap());
+  }
 }

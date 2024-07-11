@@ -12,34 +12,36 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface TesterStationRepository extends JpaRepository<TesterStationType, Integer> {
-    // Leverages JPA built in query func
-    TesterStationType findByTesterStnId(int testerStnId);
+  // Leverages JPA built in query func
+  TesterStationType findByTesterStnId(int testerStnId);
 
-    @Query("SELECT tst " +
-            "FROM TesterStationType AS tst " +
-            "WHERE inUse = false AND activeBatteryId IS NULL " +
-            "ORDER BY lastActiveDate ASC")
-    List<TesterStationType> getAvailableTesterStations();
+  @Query(
+      "SELECT tst "
+          + "FROM TesterStationType AS tst "
+          + "WHERE inUse = false AND activeBatteryId IS NULL "
+          + "ORDER BY lastActiveDate ASC")
+  List<TesterStationType> getAvailableTesterStations();
 
-    @Query("SELECT tst " +
-            "FROM TesterStationType AS tst " +
-            "ORDER BY testerStnId ")
-    List<TesterStationType> getTesterStationLogs();
+  @Query("SELECT tst " + "FROM TesterStationType AS tst " + "ORDER BY testerStnId ")
+  List<TesterStationType> getTesterStationLogs();
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE TesterStationType " +
-            "SET inUse = true, activeBatteryId = :batteryId, lastActiveDate = :lastActiveDate " +
-            "WHERE testerStnId = :testerId")
-    void markTesterInUse(@Param("testerId") int testerId,
-                         @Param("batteryId") int batteryId,
-                         @Param("lastActiveDate") Timestamp lastActiveDate);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE TesterStationType "
+          + "SET inUse = true, activeBatteryId = :batteryId, lastActiveDate = :lastActiveDate "
+          + "WHERE testerStnId = :testerId")
+  void markTesterInUse(
+      @Param("testerId") int testerId,
+      @Param("batteryId") int batteryId,
+      @Param("lastActiveDate") Timestamp lastActiveDate);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE TesterStationType " +
-            "SET inUse = false, activeBatteryId = NULL, lastActiveDate = :lastActiveDate " +
-            "WHERE testerStnId = :testerId")
-    void markTesterFree(@Param("testerId") int testerId,
-                        @Param("lastActiveDate") Timestamp lastActiveDate);
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE TesterStationType "
+          + "SET inUse = false, activeBatteryId = NULL, lastActiveDate = :lastActiveDate "
+          + "WHERE testerStnId = :testerId")
+  void markTesterFree(
+      @Param("testerId") int testerId, @Param("lastActiveDate") Timestamp lastActiveDate);
 }

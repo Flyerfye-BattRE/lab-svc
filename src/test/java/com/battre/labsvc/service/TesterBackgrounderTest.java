@@ -21,39 +21,31 @@ import org.springframework.context.ApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
 public class TesterBackgrounderTest {
-    @Mock
-    private ApplicationContext context;
-    @Mock
-    private TesterBacklogRepository testerBacklogRepo;
-    @Mock
-    private TesterStationRepository testerStationsRepo;
+  @Mock private ApplicationContext context;
+  @Mock private TesterBacklogRepository testerBacklogRepo;
+  @Mock private TesterStationRepository testerStationsRepo;
 
-    @InjectMocks
-    private TesterBackgrounder testerBackgrounder;
+  @InjectMocks private TesterBackgrounder testerBackgrounder;
 
-    @Test
-    public void testCheckAndAllocateTesters() throws Exception {
-        // testerBacklogId, terminalLayoutId, testSchemeId, batteryId
-        TesterBacklogType mockTesterBacklogEntry = new TesterBacklogType(2, 4, 3);
-        mockTesterBacklogEntry.setTesterBacklogId(1);
+  @Test
+  public void testCheckAndAllocateTesters() throws Exception {
+    // testerBacklogId, terminalLayoutId, testSchemeId, batteryId
+    TesterBacklogType mockTesterBacklogEntry = new TesterBacklogType(2, 4, 3);
+    mockTesterBacklogEntry.setTesterBacklogId(1);
 
-        List<TesterBacklogType> mockBacklog = List.of(
-                mockTesterBacklogEntry
-        );
-        when(testerBacklogRepo.getCurrentTesterBacklog()).thenReturn(mockBacklog);
-        // testerStationId, terminalLayoutId
-        List<TesterStationType> mockStations = Arrays.asList(
-                new TesterStationType(1, 3),
-                new TesterStationType(2, 6)
-        );
-        when(testerStationsRepo.getAvailableTesterStations()).thenReturn(mockStations);
+    List<TesterBacklogType> mockBacklog = List.of(mockTesterBacklogEntry);
+    when(testerBacklogRepo.getCurrentTesterBacklog()).thenReturn(mockBacklog);
+    // testerStationId, terminalLayoutId
+    List<TesterStationType> mockStations =
+        Arrays.asList(new TesterStationType(1, 3), new TesterStationType(2, 6));
+    when(testerStationsRepo.getAvailableTesterStations()).thenReturn(mockStations);
 
-        testerBackgrounder.checkAndAllocateTesters();
+    testerBackgrounder.checkAndAllocateTesters();
 
-        // Verify
-        verify(testerBacklogRepo).getCurrentTesterBacklog();
-        verify(testerStationsRepo).getAvailableTesterStations();
-        verify(testerBacklogRepo).endTesterBacklogEntry(eq(1), any(Timestamp.class));
-        verify(testerStationsRepo).markTesterInUse(eq(1), eq(2), any(Timestamp.class));
-    }
+    // Verify
+    verify(testerBacklogRepo).getCurrentTesterBacklog();
+    verify(testerStationsRepo).getAvailableTesterStations();
+    verify(testerBacklogRepo).endTesterBacklogEntry(eq(1), any(Timestamp.class));
+    verify(testerStationsRepo).markTesterInUse(eq(1), eq(2), any(Timestamp.class));
+  }
 }
