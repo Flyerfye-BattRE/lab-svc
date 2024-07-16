@@ -188,15 +188,15 @@ public class RefurbResultProcessor implements Runnable {
           labPlans.get(0), LabPlanStatusEnum.REFURB_BACKLOG_RETRY.getStatusDescription());
     } else if (rrr.resultTypeId() == LabResult.FAIL_REJECT.getStatusCode()) {
       // Fail-Reject
-      logger.info("Battery [" + rrr.batteryId() + "] FAILS > Rejected");
+      logger.info("Battery [" + rrr.batteryId() + "] FAILS > Failed");
       // Update lab plan with end date
       labPlansRepo.endLabPlan(labPlans.get(0), Timestamp.from(Instant.now()));
       labPlansRepo.setPlanStatusesForPlanId(
-          labPlans.get(0), LabPlanStatusEnum.REFURB_REJECTED.getStatusDescription());
+          labPlans.get(0), LabPlanStatusEnum.REFURB_FAILED.getStatusDescription());
       refurbPlanRepo.endRefurbPlanEntry(rrr.refurbPlanId(), Timestamp.from(Instant.now()));
 
-      // Call OpsSvc to update battery status to rejected
-      updateOpsSvcBatteryStatus(rrr.batteryId(), BatteryStatus.REJECTED);
+      // Call OpsSvc to update battery status to Failed
+      updateOpsSvcBatteryStatus(rrr.batteryId(), BatteryStatus.DESTROYED);
 
       // Call StorageSvc to remove battery/update avail capacity
       updateStorageSvcRemoveBattery(rrr.batteryId());

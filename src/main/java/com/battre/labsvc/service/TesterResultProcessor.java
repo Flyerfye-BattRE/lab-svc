@@ -166,14 +166,14 @@ public class TesterResultProcessor implements Runnable {
           labPlans.get(0), LabPlanStatusEnum.TESTER_BACKLOG_RETRY.getStatusDescription());
     } else {
       // Fail-Reject
-      logger.info("Battery [" + trr.batteryId() + "] FAILS > Rejected");
+      logger.info("Battery [" + trr.batteryId() + "] FAILS > Failed");
       // Update lab plan with end date
       labPlansRepo.endLabPlan(labPlans.get(0), Timestamp.from(Instant.now()));
       labPlansRepo.setPlanStatusesForPlanId(
-          labPlans.get(0), LabPlanStatusEnum.TESTER_REJECTED.getStatusDescription());
+          labPlans.get(0), LabPlanStatusEnum.TESTER_FAILED.getStatusDescription());
 
-      // Call OpsSvc to update battery status to rejected
-      updateOpsSvcBatteryStatus(trr.batteryId(), BatteryStatus.REJECTED);
+      // Call OpsSvc to update battery status to Failed
+      updateOpsSvcBatteryStatus(trr.batteryId(), BatteryStatus.DESTROYED);
 
       // Call StorageSvc to remove battery/update avail capacity
       updateStorageSvcRemoveBattery(trr.batteryId());
