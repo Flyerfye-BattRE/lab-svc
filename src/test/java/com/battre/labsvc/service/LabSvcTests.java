@@ -3,16 +3,22 @@ package com.battre.labsvc.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.battre.grpcifc.GrpcMethodInvoker;
+import com.battre.labsvc.enums.LabPlanStatusEnum;
+import com.battre.labsvc.enums.RefurbStationClass;
 import com.battre.labsvc.model.LabPlanType;
+import com.battre.labsvc.model.RefurbPlanType;
 import com.battre.labsvc.model.RefurbResultRecord;
+import com.battre.labsvc.model.RefurbStationType;
 import com.battre.labsvc.model.TesterBacklogType;
 import com.battre.labsvc.model.TesterResultRecord;
+import com.battre.labsvc.model.TesterStationType;
 import com.battre.labsvc.repository.LabPlansRepository;
 import com.battre.labsvc.repository.RefurbPlanRepository;
 import com.battre.labsvc.repository.RefurbStationRepository;
@@ -22,8 +28,13 @@ import com.battre.stubs.services.BatteryIdType;
 import com.battre.stubs.services.BatteryTypeTerminalPair;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsRequest;
 import com.battre.stubs.services.GetBatteryTerminalLayoutsResponse;
+
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +65,9 @@ public class LabSvcTests {
   @BeforeEach
   public void openMocks() {
     closeable = MockitoAnnotations.openMocks(this);
+    testResultQueue = new LinkedBlockingQueue<>();
+    refurbResultQueue = new LinkedBlockingQueue<>();
+
     labSvc =
         new LabSvc(
             labPlansRepo,
@@ -143,56 +157,164 @@ public class LabSvcTests {
 
   @Test
   void testGetLabPlans() {
-    // TODO: Implement test
+    List<LabPlanType> labPlans = List.of(
+            new LabPlanType(1),
+            new LabPlanType(2)
+    );
+    when(labPlansRepo.getLabPlans()).thenReturn(labPlans);
+
+    List<LabPlanType> result = labSvc.getLabPlans();
+
+    assertEquals(2, result.size());
+    assertEquals(1, result.get(0).getBatteryId());
+    assertEquals(2, result.get(1).getBatteryId());
+    verify(labPlansRepo).getLabPlans();
   }
 
   @Test
   void testGetCurrentLabPlans() {
-    // TODO: Implement test
+    List<LabPlanType> currentLabPlans = List.of(
+            new LabPlanType(3),
+            new LabPlanType(4)
+    );
+    when(labPlansRepo.getCurrentLabPlans()).thenReturn(currentLabPlans);
+
+    List<LabPlanType> result = labSvc.getCurrentLabPlans();
+
+    assertEquals(2, result.size());
+    assertEquals(3, result.get(0).getBatteryId());
+    assertEquals(4, result.get(1).getBatteryId());
+    verify(labPlansRepo).getCurrentLabPlans();
   }
 
   @Test
   void testGetCurrentTesterBacklog() {
-    // TODO: Implement test
+    List<TesterBacklogType> currentTesterBacklog = List.of(
+            new TesterBacklogType(5, 1, 2),
+            new TesterBacklogType(6, 2, 3)
+    );
+    when(testerBacklogRepo.getCurrentTesterBacklog()).thenReturn(currentTesterBacklog);
+
+    List<TesterBacklogType> result = labSvc.getCurrentTesterBacklog();
+
+    assertEquals(2, result.size());
+    assertEquals(5, result.get(0).getBatteryId());
+    assertEquals(6, result.get(1).getBatteryId());
+    verify(testerBacklogRepo).getCurrentTesterBacklog();
   }
 
   @Test
   void testGetTesterBacklog() {
-    // TODO: Implement test
+    List<TesterBacklogType> testerBacklog = List.of(
+            new TesterBacklogType(7, 3, 4),
+            new TesterBacklogType(8, 4, 5)
+    );
+    when(testerBacklogRepo.getTesterBacklog()).thenReturn(testerBacklog);
+
+    List<TesterBacklogType> result = labSvc.getTesterBacklog();
+
+    assertEquals(2, result.size());
+    assertEquals(7, result.get(0).getBatteryId());
+    assertEquals(8, result.get(1).getBatteryId());
+    verify(testerBacklogRepo).getTesterBacklog();
   }
 
   @Test
   void testGetCurrentRefurbPlans() {
-    // TODO: Implement test
+    List<RefurbPlanType> currentRefurbPlans = List.of(
+            new RefurbPlanType(9, true, true, true, true),
+            new RefurbPlanType(10, true, true, true, true)
+    );
+    when(refurbPlanRepo.getCurrentRefurbPlans()).thenReturn(currentRefurbPlans);
+
+    List<RefurbPlanType> result = labSvc.getCurrentRefurbPlans();
+
+    assertEquals(2, result.size());
+    assertEquals(9, result.get(0).getBatteryId());
+    assertEquals(10, result.get(1).getBatteryId());
+    verify(refurbPlanRepo).getCurrentRefurbPlans();
   }
 
   @Test
   void testGetRefurbPlans() {
-    // TODO: Implement test
+    List<RefurbPlanType> refurbPlans = List.of(
+            new RefurbPlanType(11, true, true, true, true)
+    );
+    when(refurbPlanRepo.getRefurbPlans()).thenReturn(refurbPlans);
+
+    List<RefurbPlanType> result = labSvc.getRefurbPlans();
+
+    assertEquals(1, result.size());
+    assertEquals(11, result.get(0).getBatteryId());
+    verify(refurbPlanRepo).getRefurbPlans();
   }
 
   @Test
   void testChangeBatteryTesterPriority() {
-    // TODO: Implement test
+    boolean result = labSvc.changeBatteryTesterPriority(13, 2);
+
+    assertTrue(result);
+    verify(testerBacklogRepo).setBatteryTesterPriority(13, 2);
   }
 
   @Test
   void testChangeBatteryRefurbPriority() {
-    // TODO: Implement test
+    boolean result = labSvc.changeBatteryRefurbPriority(14, 3);
+
+    assertTrue(result);
+    verify(refurbPlanRepo).setBatteryRefurbPriority(14, 3);
   }
+
 
   @Test
   void testGetTesterStnInfo() {
-    // TODO: Implement test
+    TesterStationType testTesterStationType = new TesterStationType(15, 1);
+    List<TesterStationType> testerStationLogs = List.of(
+            testTesterStationType
+    );
+    when(testerStnRepo.getTesterStationLogs()).thenReturn(testerStationLogs);
+
+    List<TesterStationType> result = labSvc.getTesterStationLogs();
+
+    assertEquals(1, result.size());
+    assertEquals(15, result.get(0).getTesterStnId());
+    verify(testerStnRepo).getTesterStationLogs();
   }
 
   @Test
   void testGetRefurbStnInfo() {
-    // TODO: Implement test
+    List<RefurbStationType> refurbStationLogs = List.of(
+            new RefurbStationType(17, 1),
+            new RefurbStationType(18, 2)
+    );
+    when(refurbStnRepo.getRefurbStationLogs()).thenReturn(refurbStationLogs);
+
+    List<RefurbStationType> result = labSvc.getRefurbStationLogs();
+
+    assertEquals(2, result.size());
+    assertEquals(17, result.get(0).getRefurbStnId());
+    assertEquals(18, result.get(1).getRefurbStnId());
+    verify(refurbStnRepo).getRefurbStationLogs();
   }
 
   @Test
   void testRemoveLabBattery() {
-    // TODO: Implement test
+    TesterResultRecord testerRecord = new TesterResultRecord(1, 19, 1, 1, 1, 1, Timestamp.from(Instant.now()));
+    RefurbResultRecord refurbRecord = new RefurbResultRecord(2, 2, RefurbStationClass.NO_REFURB, 19, 2, Timestamp.from(Instant.now()));
+    testResultQueue.add(testerRecord);
+    refurbResultQueue.add(refurbRecord);
+
+    when(labPlansRepo.findByBatteryId(19)).thenReturn(new LabPlanType(19));
+    when(labPlansRepo.getLabPlanIdsForBatteryId(19)).thenReturn(List.of());
+    when(testerBacklogRepo.getCurrentTesterBacklogForBatteryId(19)).thenReturn(Optional.of(1));
+    when(testerBacklogRepo.getCurrentTesterBacklogForBatteryId(19)).thenReturn(Optional.empty());
+    when(refurbPlanRepo.getPendingRefurbPlanForBatteryId(19)).thenReturn(Optional.of(1));
+    when(refurbPlanRepo.getPendingRefurbPlanForBatteryId(19)).thenReturn(Optional.empty());
+
+    boolean result = labSvc.removeBattery(19);
+
+    assertTrue(result);
+    verify(labPlansRepo).endLabPlan(anyInt(), any(Timestamp.class));
+    verify(labPlansRepo).setPlanStatusesForPlanId(anyInt(), eq(LabPlanStatusEnum.DESTROYED.toString()));
   }
 }

@@ -39,6 +39,11 @@ public class RefurbStationType {
     // Default constructor for Spring Data JPA
   }
 
+  public RefurbStationType(Integer refurbStnId, Integer refurbStationClassId) {
+    this.refurbStnId = refurbStnId;
+    this.refurbStationClassId = refurbStationClassId;
+  }
+
   public Integer getRefurbStnId() {
     return refurbStnId;
   }
