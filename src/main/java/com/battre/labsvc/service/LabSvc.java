@@ -188,6 +188,12 @@ public class LabSvc {
     boolean refurbBacklogStatus = removeRefurbBacklogEntryWithBatteryId(batteryId);
     boolean refurbResultsStatus = removeRefurbResultsWithBatteryId(batteryId);
 
+    logger.info("For Battery [" + batteryId + "] labPlanStatus " + labPlanStatus);
+    logger.info("testBacklogStatus " + testBacklogStatus);
+    logger.info("testResultsStatus " + testResultsStatus);
+    logger.info("refurbBacklogStatus " + refurbBacklogStatus);
+    logger.info("refurbResultsStatus " + refurbResultsStatus);
+
     // The relevant lab plans should be ended and at least one of the 4 places where results are
     return labPlanStatus
         && (testBacklogStatus || testResultsStatus || refurbBacklogStatus || refurbResultsStatus);
@@ -197,6 +203,7 @@ public class LabSvc {
     Optional<Integer> testerBacklogEntry =
         testerBacklogRepo.getCurrentTesterBacklogForBatteryId(batteryId);
     if (testerBacklogEntry.isPresent()) {
+      logger.info("testerBacklogEntry present");
       testerBacklogRepo.endTesterBacklogEntry(
           testerBacklogEntry.get(), Timestamp.from(Instant.now()));
 
@@ -211,6 +218,7 @@ public class LabSvc {
   private boolean removeRefurbBacklogEntryWithBatteryId(int batteryId) {
     Optional<Integer> refurbPlanEntry = refurbPlanRepo.getPendingRefurbPlanForBatteryId(batteryId);
     if (refurbPlanEntry.isPresent()) {
+      logger.info("refurbPlanEntry present");
       refurbPlanRepo.endRefurbPlanEntry(refurbPlanEntry.get(), Timestamp.from(Instant.now()));
 
       // while this may look the same as the case where the batteryId isn't detected in the list,

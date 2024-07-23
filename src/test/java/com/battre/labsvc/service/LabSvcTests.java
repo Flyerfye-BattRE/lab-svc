@@ -41,7 +41,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest(properties = "grpc.server.port=9042")
 public class LabSvcTests {
   @Mock private LabPlansRepository labPlansRepo;
   @Mock private TesterBacklogRepository testerBacklogRepo;

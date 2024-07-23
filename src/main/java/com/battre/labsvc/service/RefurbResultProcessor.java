@@ -210,7 +210,7 @@ public class RefurbResultProcessor implements Runnable {
     BatteryIdStatus batteryIdStatus =
         BatteryIdStatus.newBuilder().setBatteryId(batteryId).setBatteryStatus(status).build();
     UpdateBatteryStatusRequest request =
-        UpdateBatteryStatusRequest.newBuilder().setBattery(batteryIdStatus).build();
+        UpdateBatteryStatusRequest.newBuilder().setBatteryIdStatus(batteryIdStatus).build();
 
     UpdateBatteryStatusResponse response =
         grpcMethodInvoker.invokeNonblock("opssvc", "updateBatteryStatus", request);

@@ -46,6 +46,10 @@ public class LabPlanType {
     this.labPlanStartDate = Timestamp.from(Instant.now());
   }
 
+  public void setLabPlanId(int labPlanId) {
+    this.labPlanId = labPlanId;
+  }
+
   public int getLabPlanId() {
     return labPlanId;
   }
